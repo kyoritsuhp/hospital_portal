@@ -59,8 +59,9 @@ CREATE TABLE calendar_events (
 );
 
 -- 初期データ挿入
-INSERT INTO users (user_id, password, username) VALUES ('admin', 'admin', '管理者'),
-INSERT INTO users (user_id, password, username) VALUES ('10620', '10620', '松井友弘'),
+INSERT INTO users (user_id, password, username) VALUES 
+('admin', 'admin', '管理者'),
+('10620', '10620', '松井友弘');
 
 -- サンプルデータ
 INSERT INTO notices (title, content, importance, created_by) VALUES 

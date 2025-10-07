@@ -1,6 +1,6 @@
 <?php
 // ファイル名称: new_post.php
-// 更新日時: 2025-10-03
+// 更新日時: 2025-10-06
 
 require_once 'config.php';
 
@@ -20,7 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $importance = $_POST['importance'] ?? 'notice';
     $display_start = $_POST['display_start'] ?? null;
     $display_end = $_POST['display_end'] ?? null;
-    
+    $hostname = gethostbyaddr($_SERVER['REMOTE_ADDR']); // ホスト名を取得
+
     // バリデーション
     if (empty($title)) {
         $error = 'タイトルは必須項目です。';
@@ -35,8 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // 投稿を保存
             $stmt = $pdo->prepare("
-                INSERT INTO notices (title, content, importance, display_start, display_end, created_by) 
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO notices (title, content, importance, display_start, display_end, created_by, hostname) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             ");
             $stmt->execute([
                 $title,
@@ -44,7 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $importance,
                 empty($display_start) ? null : $display_start,
                 empty($display_end) ? null : $display_end,
-                $_SESSION['user_id']
+                $_SESSION['user_id'],
+                $hostname // ホスト名をバインド
             ]);
             
             $notice_id = $pdo->lastInsertId();
@@ -117,7 +119,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="container">
-        <!-- ヘッダー -->
         <header class="header">
             <h1><i class="fas fa-hospital"></i> 院内ポータルサイト</h1>
             <div class="header-actions">

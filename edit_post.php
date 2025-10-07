@@ -1,6 +1,6 @@
 <?php
 // ファイル名称: edit_post.php
-// 生成日時: 2025-10-03
+// 更新日時: 2025-10-06
 
 require_once 'config.php';
 
@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $importance = $_POST['importance'] ?? 'notice';
     $display_start = $_POST['display_start'] ?? null;
     $display_end = $_POST['display_end'] ?? null;
+    $hostname = gethostbyaddr($_SERVER['REMOTE_ADDR']); // ホスト名を取得
     
     // バリデーション
     if (empty($title)) {
@@ -40,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // 投稿内容を更新
             $stmt = $pdo->prepare("
                 UPDATE notices 
-                SET title = ?, content = ?, importance = ?, display_start = ?, display_end = ?, updated_at = CURRENT_TIMESTAMP
+                SET title = ?, content = ?, importance = ?, display_start = ?, display_end = ?, hostname = ?, updated_at = CURRENT_TIMESTAMP
                 WHERE id = ?
             ");
             $stmt->execute([
@@ -49,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $importance,
                 empty($display_start) ? null : $display_start,
                 empty($display_end) ? null : $display_end,
+                $hostname, // ホスト名をバインド
                 $notice_id
             ]);
 

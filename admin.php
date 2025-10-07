@@ -1,6 +1,6 @@
 <?php
 // ファイル名称: admin.php
-// 更新日時: 2025-10-03
+// 更新日時: 2025-10-06
 
 require_once 'config.php';
 
@@ -128,12 +128,13 @@ $notices = $stmt->fetchAll();
                             <th>表示期間</th>
                             <th>状態</th>
                             <th>添付</th>
+                            <th>更新端末</th>
                             <th>アクション</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($notices)): ?>
-                            <tr><td colspan="9" style="text-align: center; padding: 20px;">投稿はありません。</td></tr>
+                            <tr><td colspan="10" style="text-align: center; padding: 20px;">投稿はありません。</td></tr>
                         <?php else: ?>
                             <?php foreach ($notices as $notice): ?>
                                 <?php
@@ -180,6 +181,7 @@ $notices = $stmt->fetchAll();
                                             <i class="fas fa-minus" style="color: #ccc;"></i>
                                         <?php endif; ?>
                                     </td>
+                                    <td><?= htmlspecialchars($notice['hostname'] ?? 'N/A') ?></td>
                                     <td>
                                         <div class="action-buttons">
                                             <a href="edit_post.php?id=<?= $notice['id'] ?>" class="btn btn-outline" style="border-color:#007bff; color:#007bff" title="編集">
@@ -211,4 +213,3 @@ $notices = $stmt->fetchAll();
     </div>
 </body>
 </html>
-
