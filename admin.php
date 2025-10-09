@@ -70,14 +70,14 @@ $notices = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管理画面 - 協立ポータル</title>
+    <title>管理画面 - 協立病院ポータル</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1><i class="fas fa-hospital"></i> 協立ポータル</h1>
+            <h1><i class="fas fa-hospital"></i> 協立病院ポータル</h1>
             <div class="header-actions">
                 <span class="welcome">ようこそ、<?= htmlspecialchars(getCurrentUser()['username']) ?>さん</span>
                 <a href="index.php" class="btn btn-secondary">

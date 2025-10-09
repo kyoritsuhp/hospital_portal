@@ -29,14 +29,14 @@ $notices = $stmt->fetchAll();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>協立病院ポータルサイト</title>
+    <title>協立病院ポータル</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1><i class="fas fa-hospital"></i> 協立病院ポータルサイト</h1>
+            <h1><i class="fas fa-hospital"></i> 協立病院ポータル</h1>
             <div class="header-actions">
                 <?php if (isLoggedIn()): ?>
                     <span class="welcome">ようこそ、<?= htmlspecialchars(getCurrentUser()['username']) ?>さん</span>

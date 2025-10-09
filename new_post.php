@@ -113,14 +113,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>新規投稿 - 院内ポータルサイト</title>
+    <title>新規投稿 - 協立病院ポータル</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1><i class="fas fa-hospital"></i> 院内ポータルサイト</h1>
+            <h1><i class="fas fa-hospital"></i> 協立病院ポータル</h1>
             <div class="header-actions">
                 <span class="welcome">ようこそ、<?= htmlspecialchars(getCurrentUser()['username']) ?>さん</span>
                 <a href="index.php" class="btn btn-secondary">
@@ -230,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </div>
                         </div>
-
+                        
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                             <div class="form-group">
                                 <label for="display_start">
@@ -243,6 +243,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     class="form-control"
                                     value="<?= htmlspecialchars($_POST['display_start'] ?? '') ?>"
                                 >
+                                <br>
                                 <small style="color: #6c757d; font-size: 11px;">
                                     未設定の場合は即座に表示されます
                                 </small>
@@ -259,6 +260,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     class="form-control"
                                     value="<?= htmlspecialchars($_POST['display_end'] ?? '') ?>"
                                 >
+                                <br>
                                 <small style="color: #6c757d; font-size: 11px;">
                                     未設定の場合は無期限で表示されます
                                 </small>
