@@ -1,6 +1,6 @@
 <?php
 // ファイル名称: edit_post.php
-// 更新日時: 2025-10-06
+// 更新日時: 2025-10-10 (編集権限機能の追加)
 
 require_once 'config.php';
 
@@ -19,6 +19,28 @@ if (!$notice_id) {
     header('Location: admin.php');
     exit;
 }
+
+// 投稿データを取得
+$stmt = $pdo->prepare("SELECT * FROM notices WHERE id = ?");
+$stmt->execute([$notice_id]);
+$notice = $stmt->fetch();
+
+// 投稿が存在しない場合はリダイレクト
+if (!$notice) {
+    header('Location: admin.php');
+    exit;
+}
+
+// --- 権限チェック ---
+$currentUser = getCurrentUser();
+
+// 投稿者本人か、管理者(admin)でなければアクセスを拒否
+if ($currentUser['user_id'] !== 'admin' && $currentUser['id'] != $notice['created_by']) {
+    $_SESSION['error_message'] = 'この投稿を編集する権限がありません。';
+    header('Location: admin.php');
+    exit;
+}
+// --- 権限チェックここまで ---
 
 // 投稿更新処理
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -88,23 +110,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $pdo->commit();
             $message = '投稿を更新しました。';
+            
+            // 更新後のデータを再取得してフォームに表示
+            $stmt = $pdo->prepare("SELECT * FROM notices WHERE id = ?");
+            $stmt->execute([$notice_id]);
+            $notice = $stmt->fetch();
 
         } catch (Exception $e) {
             $pdo->rollBack();
             $error = '更新中にエラーが発生しました: ' . $e->getMessage();
         }
     }
-}
-
-// 投稿データを取得
-$stmt = $pdo->prepare("SELECT * FROM notices WHERE id = ?");
-$stmt->execute([$notice_id]);
-$notice = $stmt->fetch();
-
-// 投稿が存在しない場合はリダイレクト
-if (!$notice) {
-    header('Location: admin.php');
-    exit;
 }
 
 // 添付ファイルを取得

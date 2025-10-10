@@ -1,6 +1,6 @@
 <?php
 // ファイル名称: admin.php
-// 更新日時: 2025-10-06
+// 更新日時: 2025-10-10 (編集権限機能の追加)
 
 require_once 'config.php';
 
@@ -12,6 +12,12 @@ if (!isLoggedIn()) {
 
 $message = '';
 $error = '';
+
+// 他ページからのエラーメッセージをセッション経由で受け取る
+if (isset($_SESSION['error_message'])) {
+    $error = $_SESSION['error_message'];
+    unset($_SESSION['error_message']);
+}
 
 // POSTアクション処理
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -55,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // 投稿一覧取得
 $stmt = $pdo->prepare("
-    SELECT n.*, u.username,
+    SELECT n.*, u.username, u.user_id as creator_user_id,
            (SELECT COUNT(*) FROM notice_attachments WHERE notice_id = n.id) as attachment_count
     FROM notices n 
     LEFT JOIN users u ON n.created_by = u.id 
@@ -64,6 +70,9 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute();
 $notices = $stmt->fetchAll();
+
+// 現在のログインユーザー情報を取得
+$currentUser = getCurrentUser();
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -79,7 +88,7 @@ $notices = $stmt->fetchAll();
         <header class="header">
             <h1><i class="fas fa-hospital"></i> 協立病院ポータル</h1>
             <div class="header-actions">
-                <span class="welcome">ようこそ、<?= htmlspecialchars(getCurrentUser()['username']) ?>さん</span>
+                <span class="welcome">ようこそ、<?= htmlspecialchars($currentUser['username']) ?>さん</span>
                 <a href="index.php" class="btn btn-secondary">
                     <i class="fas fa-home"></i> ホーム
                 </a>
@@ -184,9 +193,13 @@ $notices = $stmt->fetchAll();
                                     <td><?= htmlspecialchars($notice['hostname'] ?? 'N/A') ?></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <a href="edit_post.php?id=<?= $notice['id'] ?>" class="btn btn-outline" style="border-color:#007bff; color:#007bff" title="編集">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
+                                            <?php // 編集ボタンは投稿者本人かadminのみに表示 ?>
+                                            <?php if ($currentUser['user_id'] === 'admin' || $currentUser['id'] == $notice['created_by']): ?>
+                                                <a href="edit_post.php?id=<?= $notice['id'] ?>" class="btn btn-outline" style="border-color:#007bff; color:#007bff" title="編集">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            <?php endif; ?>
+                                            
                                             <form method="POST" style="display: inline;" onsubmit="return confirm('表示設定を変更しますか？')">
                                                 <input type="hidden" name="action" value="toggle_visibility">
                                                 <input type="hidden" name="notice_id" value="<?= $notice['id'] ?>">

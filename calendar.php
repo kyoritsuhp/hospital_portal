@@ -180,9 +180,6 @@ if ($next_month > 12) {
             <div class="header-actions">
                 <?php if (isLoggedIn()): ?>
                     <span class="welcome">ようこそ、<?= htmlspecialchars(getCurrentUser()['username']) ?>さん</span>
-                    <a href="admin.php" class="btn btn-secondary">
-                        <i class="fas fa-cog"></i> 管理画面
-                    </a>
                     <a href="logout.php" class="btn btn-danger">
                         <i class="fas fa-sign-out-alt"></i> ログアウト
                     </a>
@@ -191,31 +188,6 @@ if ($next_month > 12) {
                         <i class="fas fa-sign-in-alt"></i> ログイン
                     </a>
                 <?php endif; ?>
-            
-            // モーダル制御
-            const modals = document.querySelectorAll('.modal');
-            const closeModalBtns = document.querySelectorAll('.close-modal');
-            
-            closeModalBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    modals.forEach(modal => modal.classList.remove('show'));
-                });
-            });
-            
-            modals.forEach(modal => {
-                modal.addEventListener('click', function(e) {
-                    if (e.target === modal) {
-                        modal.classList.remove('show');
-                    }
-                });
-            });
-        });
-    </script>
-</body>
-</html>; ?>
-                <a href="index.php" class="btn btn-secondary">
-                    <i class="fas fa-home"></i> ホーム
-                </a>
             </div>
         </header>
 
@@ -225,7 +197,7 @@ if ($next_month > 12) {
                 <h3><i class="fas fa-bars"></i> メニュー</h3>
                 <ul class="menu-list">
                     <li><a href="index.php"><i class="fas fa-home"></i> ホーム</a></li>
-                    <li><a href="calendar.php" style="background: #e9ecef; color: #667eea;"><i class="fas fa-calendar"></i> カレンダー</a></li>
+                    <li><a href="calendar.php" class="active"><i class="fas fa-calendar"></i> カレンダー</a></li>
                     <li><a href="#"><i class="fas fa-users"></i> スタッフ一覧</a></li>
                     <li><a href="#"><i class="fas fa-phone"></i> 内線番号</a></li>
                     <li><a href="#"><i class="fas fa-file-medical"></i> 診療情報</a></li>
@@ -248,7 +220,7 @@ if ($next_month > 12) {
                             </button>
                         </div>
                         <div>
-                            <button onclick="changeMonth(<?= date('Y') ?>, <?= date('n') ?>)" class="btn" style="background: rgba(255,255,255,0.2);">
+                            <button onclick="changeMonth(<?= date('Y') ?>, <?= date('n') ?>)" class="btn btn-today">
                                 <i class="fas fa-home"></i> 今月
                             </button>
                         </div>
@@ -299,7 +271,7 @@ if ($next_month > 12) {
                                            data-event-id="' . $event['id'] . '">';
                                 
                                 if ($time_str) {
-                                    echo '<div style="font-size: 9px; opacity: 0.8;">' . $time_str . '</div>';
+                                    echo '<div class="calendar-event-time">' . $time_str . '</div>';
                                 }
                                 echo '<div>' . htmlspecialchars($event['title']) . '</div>';
                                 echo '</div>';
@@ -324,7 +296,7 @@ if ($next_month > 12) {
             <!-- サイドメニュー（右） -->
             <aside class="sidebar sidebar-right">
                 <h3><i class="fas fa-info-circle"></i> 操作方法</h3>
-                <div style="font-size: 12px; line-height: 1.4; color: #6c757d;">
+                <div class="sidebar-help-text">
                     <?php if (isLoggedIn()): ?>
                         <p><strong>予定の追加:</strong><br>
                         日付をクリックしてください</p>
@@ -343,11 +315,11 @@ if ($next_month > 12) {
                     <?php endif; ?>
                 </div>
 
-                <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <h4 style="font-size: 13px; margin-bottom: 10px; color: #495057;">
+                <div class="sidebar-widget">
+                    <h4>
                         <i class="fas fa-calendar-check"></i> 今月の予定数
                     </h4>
-                    <div style="font-size: 20px; font-weight: bold; color: #667eea; text-align: center;">
+                    <div class="widget-content">
                         <?= count($events) ?>件
                     </div>
                 </div>
@@ -377,7 +349,7 @@ if ($next_month > 12) {
                     <textarea id="add_content" name="content" class="form-control" rows="3"></textarea>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-grid-2">
                     <div class="form-group">
                         <label for="add_start_time">開始時間</label>
                         <input type="time" id="add_start_time" name="start_time" class="form-control" value="--:--">
@@ -390,9 +362,9 @@ if ($next_month > 12) {
                 
                 <div class="form-group">
                     <label for="add_color">色</label>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <input type="color" id="add_color" name="color" class="form-control" value="#3788d8" style="width: 60px; height: 35px; padding: 0;">
-                        <select onchange="document.getElementById('add_color').value = this.value" style="padding: 6px; border-radius: 4px; border: 1px solid #ced4da;">
+                    <div class="color-picker-group">
+                        <input type="color" id="add_color" name="color" class="form-control" value="#3788d8">
+                        <select onchange="document.getElementById('add_color').value = this.value">
                             <option value="#3788d8">青</option>
                             <option value="#28a745">緑</option>
                             <option value="#dc3545">赤</option>
@@ -437,7 +409,7 @@ if ($next_month > 12) {
                               <?= isLoggedIn() ? '' : 'readonly' ?>></textarea>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-grid-2">
                     <div class="form-group">
                         <label for="edit_start_time">開始時間</label>
                         <input type="time" id="edit_start_time" name="start_time" class="form-control"
@@ -453,9 +425,9 @@ if ($next_month > 12) {
                 <?php if (isLoggedIn()): ?>
                 <div class="form-group">
                     <label for="edit_color">色</label>
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <input type="color" id="edit_color" name="color" class="form-control" style="width: 60px; height: 35px; padding: 0;">
-                        <select onchange="document.getElementById('edit_color').value = this.value" style="padding: 6px; border-radius: 4px; border: 1px solid #ced4da;">
+                    <div class="color-picker-group">
+                        <input type="color" id="edit_color" name="color" class="form-control">
+                        <select onchange="document.getElementById('edit_color').value = this.value">
                             <option value="#3788d8">青</option>
                             <option value="#28a745">緑</option>
                             <option value="#dc3545">赤</option>
@@ -677,3 +649,27 @@ if ($next_month > 12) {
                 draggedEvent = null;
             });
             <?php endif; ?>
+            
+            // モーダル制御
+            const modals = document.querySelectorAll('.modal');
+            const closeModalBtns = document.querySelectorAll('.close-modal');
+            
+            closeModalBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    modals.forEach(modal => modal.classList.remove('show'));
+                });
+            });
+            
+            modals.forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.classList.remove('show');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
+

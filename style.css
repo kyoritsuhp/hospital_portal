@@ -167,6 +167,11 @@ body {
     transform: translateX(5px);
 }
 
+.menu-list a.active {
+    background: #e9ecef;
+    color: #667eea;
+}
+
 .menu-list a i {
     margin-right: 10px;
     width: 16px;
@@ -772,6 +777,69 @@ select.form-control {
 .calendar-event:hover {
     transform: scale(1.02);
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn.btn-today {
+    background: rgba(255,255,255,0.2);
+}
+
+.calendar-event-time {
+    font-size: 9px;
+    opacity: 0.8;
+}
+
+.sidebar-help-text {
+    font-size: 12px;
+    line-height: 1.4;
+    color: #6c757d;
+}
+
+.sidebar-widget {
+    margin-top: 20px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.sidebar-widget h4 {
+    font-size: 13px;
+    margin-bottom: 10px;
+    color: #495057;
+}
+
+.sidebar-widget .widget-content {
+    font-size: 20px;
+    font-weight: bold;
+    color: #667eea;
+    text-align: center;
+}
+
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.color-picker-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.color-picker-group input[type="color"] {
+    width: 60px;
+    height: 35px;
+    padding: 0;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+}
+
+.color-picker-group select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    flex: 1;
 }
 
 /* モーダル */
