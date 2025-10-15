@@ -1,6 +1,6 @@
 <?php
 // ファイル名称: calendar.php
-// 更新日時: 2025-10-10 (カラーテーマとフィルタリング機能追加)
+// 生成日時: 2025-09-26
 
 require_once 'config.php';
 
@@ -39,17 +39,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
                 $start_date = $_POST['start_date'] ?? '';
                 $start_time = $_POST['start_time'] === '--:--' ? null : $_POST['start_time'];
                 $end_time = $_POST['end_time'] === '--:--' ? null : $_POST['end_time'];
-                $category = $_POST['category'] ?? null;
+                $color = $_POST['color'] ?? '#3788d8';
                 
                 if (empty($title) || empty($start_date)) {
                     throw new Exception('予定名と日付は必須です');
                 }
                 
                 $stmt = $pdo->prepare("
-                    INSERT INTO calendar_events (title, content, start_date, start_time, end_time, category, created_by) 
+                    INSERT INTO calendar_events (title, content, start_date, start_time, end_time, color, created_by) 
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                 ");
-                $stmt->execute([$title, $content, $start_date, $start_time, $end_time, $category, $_SESSION['user_id']]);
+                $stmt->execute([$title, $content, $start_date, $start_time, $end_time, $color, $_SESSION['user_id']]);
                 
                 echo json_encode(['success' => true, 'message' => '予定を追加しました']);
                 break;
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
                 $start_date = $_POST['start_date'] ?? '';
                 $start_time = $_POST['start_time'] === '--:--' ? null : $_POST['start_time'];
                 $end_time = $_POST['end_time'] === '--:--' ? null : $_POST['end_time'];
-                $category = $_POST['category'] ?? null;
+                $color = $_POST['color'] ?? '#3788d8';
                 
                 if (empty($title) || empty($start_date)) {
                     throw new Exception('予定名と日付は必須です');
@@ -69,10 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
                 
                 $stmt = $pdo->prepare("
                     UPDATE calendar_events 
-                    SET title = ?, content = ?, start_date = ?, start_time = ?, end_time = ?, category = ?
+                    SET title = ?, content = ?, start_date = ?, start_time = ?, end_time = ?, color = ?
                     WHERE id = ? AND created_by = ?
                 ");
-                $stmt->execute([$title, $content, $start_date, $start_time, $end_time, $category, $event_id, $_SESSION['user_id']]);
+                $stmt->execute([$title, $content, $start_date, $start_time, $end_time, $color, $event_id, $_SESSION['user_id']]);
                 
                 echo json_encode(['success' => true, 'message' => '予定を更新しました']);
                 break;
@@ -124,14 +124,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax'])) {
     exit;
 }
 
-// カテゴリー定義
-$categories = [
-    'doctor' => ['label' => '医師', 'color' => '#e74c3c'],
-    'meeting' => ['label' => '会議室', 'color' => '#3498db'],
-    'committee' => ['label' => '委員会', 'color' => '#2ecc71'],
-    'other' => ['label' => 'その他', 'color' => '#f39c12']
-];
-
 // 指定月の予定取得
 $first_day = $year . '-' . sprintf('%02d', $month) . '-01';
 $last_day = $year . '-' . sprintf('%02d', $month) . '-' . date('t', strtotime($first_day));
@@ -150,17 +142,6 @@ $events = $stmt->fetchAll();
 $events_by_date = [];
 foreach ($events as $event) {
     $events_by_date[$event['start_date']][] = $event;
-}
-
-// カテゴリー別の件数を集計
-$category_counts = ['doctor' => 0, 'meeting' => 0, 'committee' => 0, 'other' => 0, 'none' => 0];
-foreach ($events as $event) {
-    $cat = $event['category'] ?? 'none';
-    if (isset($category_counts[$cat])) {
-        $category_counts[$cat]++;
-    } else {
-        $category_counts['none']++;
-    }
 }
 
 // カレンダー生成用データ
@@ -190,198 +171,6 @@ if ($next_month > 12) {
     <title>カレンダー - 院内ポータルサイト</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        .category-filter {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .category-filter h4 {
-            font-size: 13px;
-            margin-bottom: 12px;
-            color: #495057;
-        }
-        
-        .category-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .category-btn {
-            padding: 8px 15px;
-            border: 2px solid;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: white;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .category-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        .category-btn.active {
-            color: white !important;
-            transform: scale(1.05);
-        }
-        
-        .category-btn-doctor {
-            border-color: #e74c3c;
-            color: #e74c3c;
-        }
-        
-        .category-btn-doctor.active {
-            background: #e74c3c;
-        }
-        
-        .category-btn-meeting {
-            border-color: #3498db;
-            color: #3498db;
-        }
-        
-        .category-btn-meeting.active {
-            background: #3498db;
-        }
-        
-        .category-btn-committee {
-            border-color: #2ecc71;
-            color: #2ecc71;
-        }
-        
-        .category-btn-committee.active {
-            background: #2ecc71;
-        }
-        
-        .category-btn-other {
-            border-color: #f39c12;
-            color: #f39c12;
-        }
-        
-        .category-btn-other.active {
-            background: #f39c12;
-        }
-        
-        .category-btn-all {
-            border-color: #667eea;
-            color: #667eea;
-        }
-        
-        .category-btn-all.active {
-            background: #667eea;
-        }
-        
-        .category-count {
-            background: rgba(0,0,0,0.1);
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: bold;
-        }
-        
-        .category-btn.active .category-count {
-            background: rgba(255,255,255,0.3);
-        }
-        
-        .event-category-badge {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 9px;
-            font-weight: bold;
-            color: white;
-            margin-right: 4px;
-        }
-        
-        .modal-category-select {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 8px;
-        }
-        
-        .category-option {
-            position: relative;
-        }
-        
-        .category-option input[type="radio"] {
-            position: absolute;
-            opacity: 0;
-        }
-        
-        .category-option label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            border: 2px solid;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 12px;
-            font-weight: 600;
-            background: white;
-        }
-        
-        .category-option input[type="radio"]:checked + label {
-            color: white !important;
-            transform: scale(1.05);
-        }
-        
-        .category-option-doctor label {
-            border-color: #e74c3c;
-            color: #e74c3c;
-        }
-        
-        .category-option-doctor input[type="radio"]:checked + label {
-            background: #e74c3c;
-        }
-        
-        .category-option-meeting label {
-            border-color: #3498db;
-            color: #3498db;
-        }
-        
-        .category-option-meeting input[type="radio"]:checked + label {
-            background: #3498db;
-        }
-        
-        .category-option-committee label {
-            border-color: #2ecc71;
-            color: #2ecc71;
-        }
-        
-        .category-option-committee input[type="radio"]:checked + label {
-            background: #2ecc71;
-        }
-        
-        .category-option-other label {
-            border-color: #f39c12;
-            color: #f39c12;
-        }
-        
-        .category-option-other input[type="radio"]:checked + label {
-            background: #f39c12;
-        }
-        
-        .category-option-none label {
-            border-color: #95a5a6;
-            color: #95a5a6;
-        }
-        
-        .category-option-none input[type="radio"]:checked + label {
-            background: #95a5a6;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
@@ -418,38 +207,6 @@ if ($next_month > 12) {
 
             <!-- メインコンテンツ -->
             <main class="content">
-                <!-- カテゴリーフィルター -->
-                <div class="category-filter">
-                    <h4><i class="fas fa-filter"></i> カテゴリーフィルター</h4>
-                    <div class="category-buttons">
-                        <button class="category-btn category-btn-all active" onclick="filterByCategory('all')">
-                            <i class="fas fa-list"></i>
-                            すべて
-                            <span class="category-count"><?= count($events) ?></span>
-                        </button>
-                        <button class="category-btn category-btn-doctor" onclick="filterByCategory('doctor')">
-                            <i class="fas fa-user-md"></i>
-                            医師
-                            <span class="category-count"><?= $category_counts['doctor'] ?></span>
-                        </button>
-                        <button class="category-btn category-btn-meeting" onclick="filterByCategory('meeting')">
-                            <i class="fas fa-door-open"></i>
-                            会議室
-                            <span class="category-count"><?= $category_counts['meeting'] ?></span>
-                        </button>
-                        <button class="category-btn category-btn-committee" onclick="filterByCategory('committee')">
-                            <i class="fas fa-users"></i>
-                            委員会
-                            <span class="category-count"><?= $category_counts['committee'] ?></span>
-                        </button>
-                        <button class="category-btn category-btn-other" onclick="filterByCategory('other')">
-                            <i class="fas fa-ellipsis-h"></i>
-                            その他
-                            <span class="category-count"><?= $category_counts['other'] ?></span>
-                        </button>
-                    </div>
-                </div>
-                
                 <div class="calendar-container">
                     <!-- カレンダーヘッダー -->
                     <div class="calendar-header">
@@ -492,18 +249,13 @@ if ($next_month > 12) {
                             $is_today = $current_date === date('Y-m-d');
                             $day_events = $events_by_date[$current_date] ?? [];
                             
-                            $clickable = isLoggedIn() ? 'calendar-day-clickable' : '';
-                            
-                            echo '<div class="calendar-day ' . $clickable . ($is_today ? ' today' : '') . '" 
-                                       data-date="' . $current_date . '">';
+                            echo '<div class="calendar-day' . ($is_today ? ' today' : '') . '" 
+                                       data-date="' . $current_date . '"
+                                       onclick="' . (isLoggedIn() ? 'openAddEventModal(\'' . $current_date . '\')' : '') . '">';
                             echo '<div class="day-number">' . $day . '</div>';
                             
                             // 予定表示
                             foreach ($day_events as $event) {
-                                $category = $event['category'] ?? null;
-                                $color = $category && isset($categories[$category]) ? $categories[$category]['color'] : '#95a5a6';
-                                $categoryLabel = $category && isset($categories[$category]) ? $categories[$category]['label'] : '';
-                                
                                 $time_str = '';
                                 if ($event['start_time']) {
                                     $time_str = date('H:i', strtotime($event['start_time']));
@@ -513,15 +265,11 @@ if ($next_month > 12) {
                                 }
                                 
                                 echo '<div class="calendar-event" 
-                                           style="background-color: ' . htmlspecialchars($color) . '"
+                                           style="background-color: ' . htmlspecialchars($event['color']) . '"
                                            onclick="event.stopPropagation(); openEventModal(' . $event['id'] . ')"
                                            draggable="' . (isLoggedIn() ? 'true' : 'false') . '"
-                                           data-event-id="' . $event['id'] . '"
-                                           data-category="' . htmlspecialchars($category ?? '') . '">';
+                                           data-event-id="' . $event['id'] . '">';
                                 
-                                if ($categoryLabel) {
-                                    echo '<div class="event-category-badge" style="background: rgba(0,0,0,0.2)">' . htmlspecialchars($categoryLabel) . '</div>';
-                                }
                                 if ($time_str) {
                                     echo '<div class="calendar-event-time">' . $time_str . '</div>';
                                 }
@@ -558,18 +306,12 @@ if ($next_month > 12) {
                         
                         <p><strong>予定の移動:</strong><br>
                         予定をドラッグして別の日に移動できます</p>
-                        
-                        <p><strong>フィルタリング:</strong><br>
-                        カテゴリーボタンをクリックして絞り込みができます</p>
                     <?php else: ?>
                         <p><strong>閲覧モード:</strong><br>
                         ログインすると予定の追加・編集ができます</p>
                         
                         <p><strong>予定の確認:</strong><br>
-                        予定をクリックすると詳細が別ウィンドウで表示されます</p>
-                        
-                        <p><strong>フィルタリング:</strong><br>
-                        カテゴリーボタンをクリックして絞り込みができます</p>
+                        予定をクリックすると詳細が表示されます</p>
                     <?php endif; ?>
                 </div>
 
@@ -610,47 +352,26 @@ if ($next_month > 12) {
                 <div class="form-grid-2">
                     <div class="form-group">
                         <label for="add_start_time">開始時間</label>
-                        <input type="time" id="add_start_time" name="start_time" class="form-control">
+                        <input type="time" id="add_start_time" name="start_time" class="form-control" value="--:--">
                     </div>
                     <div class="form-group">
                         <label for="add_end_time">終了時間</label>
-                        <input type="time" id="add_end_time" name="end_time" class="form-control">
+                        <input type="time" id="add_end_time" name="end_time" class="form-control" value="--:--">
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label>カテゴリー</label>
-                    <div class="modal-category-select">
-                        <div class="category-option category-option-doctor">
-                            <input type="radio" name="category" value="doctor" id="add_cat_doctor">
-                            <label for="add_cat_doctor">
-                                <i class="fas fa-user-md"></i> 医師
-                            </label>
-                        </div>
-                        <div class="category-option category-option-meeting">
-                            <input type="radio" name="category" value="meeting" id="add_cat_meeting">
-                            <label for="add_cat_meeting">
-                                <i class="fas fa-door-open"></i> 会議室
-                            </label>
-                        </div>
-                        <div class="category-option category-option-committee">
-                            <input type="radio" name="category" value="committee" id="add_cat_committee">
-                            <label for="add_cat_committee">
-                                <i class="fas fa-users"></i> 委員会
-                            </label>
-                        </div>
-                        <div class="category-option category-option-other">
-                            <input type="radio" name="category" value="other" id="add_cat_other">
-                            <label for="add_cat_other">
-                                <i class="fas fa-ellipsis-h"></i> その他
-                            </label>
-                        </div>
-                        <div class="category-option category-option-none" style="grid-column: 1 / -1;">
-                            <input type="radio" name="category" value="" id="add_cat_none" checked>
-                            <label for="add_cat_none">
-                                <i class="fas fa-minus"></i> カテゴリーなし
-                            </label>
-                        </div>
+                    <label for="add_color">色</label>
+                    <div class="color-picker-group">
+                        <input type="color" id="add_color" name="color" class="form-control" value="#3788d8">
+                        <select onchange="document.getElementById('add_color').value = this.value">
+                            <option value="#3788d8">青</option>
+                            <option value="#28a745">緑</option>
+                            <option value="#dc3545">赤</option>
+                            <option value="#ffc107">黄</option>
+                            <option value="#6f42c1">紫</option>
+                            <option value="#fd7e14">オレンジ</option>
+                        </select>
                     </div>
                 </div>
             </form>
@@ -703,43 +424,251 @@ if ($next_month > 12) {
                 
                 <?php if (isLoggedIn()): ?>
                 <div class="form-group">
-                    <label>カテゴリー</label>
-                    <div class="modal-category-select">
-                        <div class="category-option category-option-doctor">
-                            <input type="radio" name="category" value="doctor" id="edit_cat_doctor">
-                            <label for="edit_cat_doctor">
-                                <i class="fas fa-user-md"></i> 医師
-                            </label>
-                        </div>
-                        <div class="category-option category-option-meeting">
-                            <input type="radio" name="category" value="meeting" id="edit_cat_meeting">
-                            <label for="edit_cat_meeting">
-                                <i class="fas fa-door-open"></i> 会議室
-                            </label>
-                        </div>
-                        <div class="category-option category-option-committee">
-                            <input type="radio" name="category" value="committee" id="edit_cat_committee">
-                            <label for="edit_cat_committee">
-                                <i class="fas fa-users"></i> 委員会
-                            </label>
-                        </div>
-                        <div class="category-option category-option-other">
-                            <input type="radio" name="category" value="other" id="edit_cat_other">
-                            <label for="edit_cat_other">
-                                <i class="fas fa-ellipsis-h"></i> その他
-                            </label>
-                        </div>
-                        <div class="category-option category-option-none" style="grid-column: 1 / -1;">
-                            <input type="radio" name="category" value="" id="edit_cat_none">
-                            <label for="edit_cat_none">
-                                <i class="fas fa-minus"></i> カテゴリーなし
-                            </label>
-                        </div>
+                    <label for="edit_color">色</label>
+                    <div class="color-picker-group">
+                        <input type="color" id="edit_color" name="color" class="form-control">
+                        <select onchange="document.getElementById('edit_color').value = this.value">
+                            <option value="#3788d8">青</option>
+                            <option value="#28a745">緑</option>
+                            <option value="#dc3545">赤</option>
+                            <option value="#ffc107">黄</option>
+                            <option value="#6f42c1">紫</option>
+                            <option value="#fd7e14">オレンジ</option>
+                        </select>
                     </div>
                 </div>
-                <?php else: ?>
-                <div class="form-group">
-                    <label>カテゴリー</label>
-                    <div id="edit_category_display" style="padding: 10px; background: #f8f9fa; border-radius: 6px; font-size: 13px;"></div>
-                </div>
                 <?php endif; ?>
+            </form>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal">
+                    <?= isLoggedIn() ? 'キャンセル' : '閉じる' ?>
+                </button>
+                <?php if (isLoggedIn()): ?>
+                    <button type="button" class="btn btn-danger" onclick="deleteEvent()">
+                        <i class="fas fa-trash"></i> 削除
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="saveEvent('edit')">
+                        <i class="fas fa-save"></i> 更新
+                    </button>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let draggedEvent = null;
+        
+        // 月変更
+        function changeMonth(year, month) {
+            window.location.href = `calendar.php?year=${year}&month=${month}`;
+        }
+        
+        // 予定追加モーダルを開く
+        function openAddEventModal(date) {
+            <?php if (!isLoggedIn()): ?>
+                return;
+            <?php endif; ?>
+            
+            document.getElementById('add_start_date').value = date;
+            document.getElementById('add_title').value = '';
+            document.getElementById('add_content').value = '';
+            document.getElementById('add_start_time').value = '';
+            document.getElementById('add_end_time').value = '';
+            document.getElementById('add_color').value = '#3788d8';
+            
+            // 時間の初期値を設定
+            const timeInputs = ['add_start_time', 'add_end_time'];
+            timeInputs.forEach(id => {
+                const input = document.getElementById(id);
+                input.placeholder = '--:--';
+            });
+            
+            document.getElementById('addEventModal').classList.add('show');
+        }
+        
+        // 予定表示・編集モーダルを開く
+        function openEventModal(eventId) {
+            fetch('calendar.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `ajax=1&action=get_event&event_id=${eventId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const event = data.event;
+                    document.getElementById('edit_event_id').value = event.id;
+                    document.getElementById('edit_start_date').value = event.start_date;
+                    document.getElementById('edit_title').value = event.title;
+                    document.getElementById('edit_content').value = event.content || '';
+                    document.getElementById('edit_start_time').value = event.start_time || '';
+                    document.getElementById('edit_end_time').value = event.end_time || '';
+                    
+                    <?php if (isLoggedIn()): ?>
+                    document.getElementById('edit_color').value = event.color || '#3788d8';
+                    document.getElementById('eventModalTitle').innerHTML = '<i class="fas fa-edit"></i> 予定編集';
+                    <?php else: ?>
+                    document.getElementById('eventModalTitle').innerHTML = '<i class="fas fa-eye"></i> 予定詳細';
+                    <?php endif; ?>
+                    
+                    document.getElementById('eventModal').classList.add('show');
+                } else {
+                    alert('予定の取得に失敗しました: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('エラーが発生しました');
+                console.error('Error:', error);
+            });
+        }
+        
+        // 予定保存
+        function saveEvent(mode) {
+            const form = mode === 'add' ? 'addEventForm' : 'editEventForm';
+            const formData = new FormData(document.getElementById(form));
+            
+            // 時間が空の場合は--:--にする
+            const startTime = formData.get('start_time');
+            const endTime = formData.get('end_time');
+            
+            if (!startTime) formData.set('start_time', '--:--');
+            if (!endTime) formData.set('end_time', '--:--');
+            
+            fetch('calendar.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('エラー: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('通信エラーが発生しました');
+                console.error('Error:', error);
+            });
+        }
+        
+        // 予定削除
+        function deleteEvent() {
+            if (!confirm('この予定を削除しますか？')) return;
+            
+            const eventId = document.getElementById('edit_event_id').value;
+            const formData = new FormData();
+            formData.append('ajax', '1');
+            formData.append('action', 'delete');
+            formData.append('event_id', eventId);
+            
+            fetch('calendar.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('削除に失敗しました: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('通信エラーが発生しました');
+                console.error('Error:', error);
+            });
+        }
+        
+        // ドラッグ&ドロップ機能
+        document.addEventListener('DOMContentLoaded', function() {
+            <?php if (isLoggedIn()): ?>
+            // ドラッグ開始
+            document.addEventListener('dragstart', function(e) {
+                if (e.target.classList.contains('calendar-event')) {
+                    draggedEvent = {
+                        id: e.target.dataset.eventId,
+                        element: e.target
+                    };
+                    e.dataTransfer.effectAllowed = 'move';
+                }
+            });
+            
+            // ドラッグオーバー
+            document.addEventListener('dragover', function(e) {
+                if (draggedEvent && e.target.classList.contains('calendar-day')) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    e.target.style.backgroundColor = 'rgba(102, 126, 234, 0.2)';
+                }
+            });
+            
+            // ドラッグリーブ
+            document.addEventListener('dragleave', function(e) {
+                if (e.target.classList.contains('calendar-day')) {
+                    e.target.style.backgroundColor = '';
+                }
+            });
+            
+            // ドロップ
+            document.addEventListener('drop', function(e) {
+                if (draggedEvent && e.target.classList.contains('calendar-day')) {
+                    e.preventDefault();
+                    e.target.style.backgroundColor = '';
+                    
+                    const newDate = e.target.dataset.date;
+                    if (newDate) {
+                        const formData = new FormData();
+                        formData.append('ajax', '1');
+                        formData.append('action', 'move');
+                        formData.append('event_id', draggedEvent.id);
+                        formData.append('new_date', newDate);
+                        
+                        fetch('calendar.php', {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert('移動に失敗しました: ' + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            alert('通信エラーが発生しました');
+                            console.error('Error:', error);
+                        });
+                    }
+                }
+                
+                draggedEvent = null;
+            });
+            <?php endif; ?>
+            
+            // モーダル制御
+            const modals = document.querySelectorAll('.modal');
+            const closeModalBtns = document.querySelectorAll('.close-modal');
+            
+            closeModalBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    modals.forEach(modal => modal.classList.remove('show'));
+                });
+            });
+            
+            modals.forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.classList.remove('show');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+

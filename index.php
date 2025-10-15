@@ -65,7 +65,7 @@ $notices = $stmt->fetchAll();
                     <li><a href="calendar.php"><i class="fas fa-calendar"></i> カレンダー</a></li>
                     <li><a href="#"><i class="fas fa-users"></i> スタッフ一覧</a></li>
                     <li><a href="#"><i class="fas fa-phone"></i> 内線番号</a></li>
-                    <li><a href="#"><i class="fas fa-file-medical"></i> 診療情報</a></li>
+                    <li><a href="http://localhost/kenshin/"><i class="fas fa-file-medical"></i> 健診問診票</a></li>
                     <li><a href="#"><i class="fas fa-chart-bar"></i> 統計情報</a></li>
                 </ul>
             </nav>
