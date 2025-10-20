@@ -1,6 +1,7 @@
 <?php
 // ファイル名称: config.php
 // 更新日時: 2025-10-08 (jinji連携改修)
+// 健診リンク表示ロジック変更: 2025-10-20
 
 // データベース設定
 define('DB_HOST', 'localhost');
@@ -94,5 +95,48 @@ function getImportanceColor($importance) {
 function getImportanceLabel($importance) {
     $labels = ['important' => '重要', 'notice' => '周知', 'contact' => '連絡'];
     return $labels[$importance] ?? '一般';
+}
+
+/**
+ * 健診問診票リンクを表示すべきか判断する
+ * 1. ログイン中のユーザーの役職 (position) を確認
+ * 2. 役職が '健診担当' なら true
+ * 3. それ以外 (未ログイン含む) なら kenshin/config.json の設定に従う
+ * @return bool
+ */
+function shouldShowKenshinLink() {
+    // 1. ユーザーの役職をセッションから取得
+    $user_position = $_SESSION['position'] ?? null;
+    
+    // 2. 役職が '健診担当' かチェック
+    if ($user_position === '健診担当') {
+        return true; // 健診担当は常に表示
+    }
+    
+    // 3. それ以外 (未ログイン or 健診担当でない) 場合は、JSONファイルの設定を確認
+    
+    // このファイルの場所を基準に、kenshinディレクトリのconfig.jsonを指定
+    $configPath = __DIR__ . '/../kenshin/config.json';
+    
+    if (!file_exists($configPath)) {
+        // config.json が存在しない場合は、デフォルトで表示(true)
+        return true;
+    }
+    
+    $configJson = @file_get_contents($configPath);
+    if ($configJson === false) {
+        // 読み取り失敗時も、安全のため表示(true)
+        return true; 
+    }
+    
+    $config = json_decode($configJson, true);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        // JSONデコード失敗時も、安全のため表示(true)
+        return true;
+    }
+    
+    // 'show_portal_link' が存在しないか、trueの場合に true を返す
+    // 明示的に false が設定されている場合のみ false を返す
+    return $config['show_portal_link'] ?? true;
 }
 ?>

@@ -1,6 +1,9 @@
 <?php
 // ファイル名称: login.php
 // 更新日時: 2025-10-08 (jinji連携強化、情報同期処理追加)
+// アイコンをオフライン対応のSVGに置換: 2025-10-15
+// アイコンを画像ファイルに置換: 2025-10-15
+// 役職(position)をセッションに保存するよう変更: 2025-10-20
 
 require_once 'config.php';
 
@@ -62,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     session_regenerate_id(true);
                     $_SESSION['user_id'] = $final_portal_user['id'];
                     $_SESSION['user'] = $final_portal_user['username'];
+                    $_SESSION['position'] = $staff['position']; // <-- 役職情報をセッションに保存
                     $_SESSION['last_activity'] = time();
 
                     header('Location: index.php');
@@ -87,29 +91,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ログイン - 院内ポータルサイト</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
+    </head>
 <body>
     <div class="login-container">
         <div class="login-box">
-            <h2><i class="fas fa-hospital"></i> 協立病院ポータル ログイン</h2>
+            <h2>
+                協立病院ポータル ログイン
+            </h2>
             <?php if ($error): ?>
                 <div class="alert alert-error">
-                    <i class="fas fa-exclamation-triangle"></i> <?= htmlspecialchars($error) ?>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle; margin-right: 4px;">
+                        <path d="M12 2L.5 21h23L12 2zm1 16h-2v-2h2v2zm0-4h-2V7h2v7z"/>
+                    </svg>
+                    <?= htmlspecialchars($error) ?>
                 </div>
             <?php endif; ?>
             <form method="POST">
                 <div class="form-group">
-                    <label for="user_id"><i class="fas fa-user"></i> 職員ID</label>
+                    <label for="user_id">
+                        <img src="icons/common_user.svg" alt="職員ID" width="14" height="14" style="vertical-align: middle; margin-right: 4px;">
+                        職員ID
+                    </label>
                     <input type="text" id="user_id" name="user_id" class="form-control" value="<?= htmlspecialchars($_POST['user_id'] ?? '') ?>" placeholder="職員IDを入力" required autofocus>
                 </div>
                 <div class="form-group">
-                    <label for="password"><i class="fas fa-lock"></i> パスワード</label>
+                    <label for="password">
+                        <img src="icons/common_passward.svg" alt="パスワード" width="14" height="14" style="vertical-align: middle; margin-right: 4px;">
+                        パスワード
+                    </label>
                     <input type="password" id="password" name="password" class="form-control" placeholder="パスワードを入力" required>
                 </div>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> ログイン</button>
+				
+				<button type="submit" class="btn btn-primary">
+   					 <?php
+        				$icon_path = 'icons/common_login.svg';
+        				if (file_exists($icon_path)) {echo file_get_contents($icon_path);}
+   					 ?>
+   					 ログイン
+				</button>
+				
             </form>
-            <a href="index.php" class="back-link"><i class="fas fa-arrow-left"></i> トップページに戻る</a>
+            <a href="index.php" class="back-link">
+				<img src="icons/common_arrow-left.svg" alt="トップページに戻る" width="14" height="14" style="vertical-align: middle; margin-right: 4px;">
+                トップページに戻る
+            </a>
         </div>
     </div>
     <style>
@@ -118,4 +143,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </body>
 </html>
-

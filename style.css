@@ -988,3 +988,11 @@ select.form-control {
         padding: 5px;
     }
 }
+/* ボタン内のSVGアイコンの色を文字色と合わせる設定 */
+.btn svg {
+    width: 16px; /* アイコンの幅 */
+    height: 16px; /* アイコンの高さ */
+    fill: currentColor; /* 文字色と同じ色で塗りつぶす */
+    vertical-align: middle;
+    margin-right: 4px;
+}
