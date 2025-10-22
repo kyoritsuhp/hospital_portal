@@ -1,5 +1,15 @@
-/* ファイル名称: style.css */
-/* 生成日時: 2025-09-26 */
+/*
+ * ファイル名称: style.css
+ * 生成日時: 2025-09-26
+ *
+ * 再編成日: 2025-10-21
+ * 概要: PHPファイルごとに関連するスタイルをグループ化
+ */
+
+/* =============================================== */
+/* 1. グローバル & 共通スタイル */
+/* (多くのファイルで共通して使用) */
+/* =============================================== */
 
 * {
     margin: 0;
@@ -16,6 +26,7 @@ body {
     min-height: 100vh;
 }
 
+/* .container (全ページのラッパー) */
 .container {
     max-width: 1400px;
     margin: 0 auto;
@@ -24,7 +35,6 @@ body {
     box-shadow: 0 0 20px rgba(0,0,0,0.1);
 }
 
-/* ヘッダー */
 .header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -38,6 +48,16 @@ body {
 .header h1 {
     font-size: 22px;
     font-weight: 600;
+    display: flex;         
+    align-items: center;   
+    gap: 10px;             
+}
+
+/* .header (全ページのヘッダー) */
+.header h1 svg {
+    width: 30px;
+    height: 30px;
+    fill: #f8f9fa;
 }
 
 .header h1 i {
@@ -51,6 +71,7 @@ body {
     gap: 10px;
 }
 
+/* .welcome (ログイン時ヘッダー) */
 .welcome {
     background: rgba(255,255,255,0.2);
     padding: 6px 12px;
@@ -59,7 +80,7 @@ body {
     backdrop-filter: blur(10px);
 }
 
-/* ボタンスタイル */
+/* .btn (共通ボタンスタイル) */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -115,14 +136,14 @@ body {
     color: white;
 }
 
-/* メインレイアウト */
+/* .main-content (共通レイアウト) */
 .main-content {
     display: grid;
     grid-template-columns: 220px 1fr 250px;
     min-height: calc(100vh - 70px);
 }
 
-/* サイドバー共通 */
+/* .sidebar (共通サイドバー) */
 .sidebar {
     padding: 20px;
     background: #f8f9fa;
@@ -137,7 +158,8 @@ body {
     border-bottom: 2px solid #dee2e6;
 }
 
-/* 左サイドバー */
+/* .sidebar-left (左メニュー) */
+/* (index.php, calendar.php) */
 .sidebar-left {
     border-right: 1px solid #e9ecef;
 }
@@ -178,11 +200,252 @@ body {
     text-align: center;
 }
 
-/* 右サイドバー */
+/* .sidebar-right (右サイドバー) */
+/* (index.php, calendar.php) */
 .sidebar-right {
     border-left: 1px solid #e9ecef;
 }
 
+/* .content (共通メインコンテンツエリア) */
+.content {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* .page-header (共通ページヘッダー) */
+.page-header {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.page-header h2 {
+    color: #495057;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.page-header h2 i {
+    margin-right: 10px;
+    color: #667eea;
+}
+
+/* =============================================== */
+/* 2. フォーム共通スタイル */
+/* (new_post.php, edit_post.php, change_password.php, login.php, calendar.php modal) */
+/* =============================================== */
+
+/* .form-container (new_post.php, edit_post.php) */
+.form-container {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* .form-group (共通フォームグループ) */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 13px;
+}
+
+/* .form-control (共通フォーム入力) */
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.25);
+}
+
+.form-control[readonly] {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+select.form-control {
+    cursor: pointer;
+}
+
+.file-input {
+    padding: 8px;
+    border: 2px dashed #ced4da;
+    border-radius: 6px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.file-input:hover {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+/* .importance-options (new_post.php, edit_post.php) */
+.importance-options {
+    display: flex;
+    gap: 15px;
+    margin-top: 8px;
+}
+
+.importance-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.importance-option input[type="radio"] {
+    margin: 0;
+}
+
+.importance-option label {
+    margin: 0;
+    font-weight: normal;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.importance-option.important label {
+    background: rgba(255, 68, 68, 0.1);
+    color: #ff4444;
+}
+
+.importance-option.notice label {
+    background: rgba(255, 204, 0, 0.1);
+    color: #ffcc00;
+}
+
+.importance-option.contact label {
+    background: rgba(68, 68, 255, 0.1);
+    color: #4444ff;
+}
+
+.importance-option input[type="radio"]:checked + label {
+    font-weight: 600;
+    transform: scale(1.05);
+}
+
+/* .form-grid-2 (calendar.php modal) */
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* =============================================== */
+/* 3. モーダル共通スタイル */
+/* (calendar.php) */
+/* =============================================== */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: modalShow 0.3s ease;
+}
+
+@keyframes modalShow {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #495057;
+    font-size: 18px;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-modal:hover {
+    background: #f8f9fa;
+    color: #495057;
+}
+
+.modal-footer {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+
+/* =============================================== */
+/* 4. index.php スタイル */
+/* =============================================== */
+
+/* .quick-links (index.php 右サイドバー) */
 .quick-links {
     margin-bottom: 25px;
 }
@@ -212,6 +475,7 @@ body {
     text-align: center;
 }
 
+/* .notice-summary (index.php 右サイドバー) */
 .notice-summary {
     background: white;
     padding: 15px;
@@ -291,30 +555,7 @@ body {
     font-size: 11px;
 }
 
-/* メインコンテンツ */
-.content {
-    padding: 20px;
-    overflow-y: auto;
-}
-
-.page-header {
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #e9ecef;
-}
-
-.page-header h2 {
-    color: #495057;
-    font-size: 18px;
-    font-weight: 600;
-}
-
-.page-header h2 i {
-    margin-right: 10px;
-    color: #667eea;
-}
-
-/* 投稿一覧 */
+/* .notices-container (index.php 投稿一覧) */
 .notices-container {
     display: flex;
     flex-direction: column;
@@ -349,6 +590,7 @@ body {
     flex-wrap: wrap;
 }
 
+/* .importance-badge (index.php, admin.php) */
 .importance-badge {
     color: white;
     padding: 3px 8px;
@@ -421,7 +663,7 @@ body {
     margin-right: 6px;
 }
 
-/* 投稿なしの状態 */
+/* .no-notices (index.php 投稿なし) */
 .no-notices {
     text-align: center;
     padding: 40px;
@@ -434,171 +676,16 @@ body {
     opacity: 0.5;
 }
 
-/* 折りたたみボタン */
+/* .toggle-container (index.php もっと見る) */
 .toggle-container {
     text-align: center;
     margin-top: 20px;
 }
 
-/* フォームスタイル */
-.form-container {
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    max-width: 800px;
-    margin: 0 auto;
-}
+/* =============================================== */
+/* 5. admin.php スタイル */
+/* =============================================== */
 
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 600;
-    color: #495057;
-    font-size: 13px;
-}
-
-.form-control {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    font-size: 13px;
-    transition: border-color 0.3s ease;
-}
-
-.form-control:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.25);
-}
-
-.form-control[readonly] {
-    background-color: #f8f9fa;
-    cursor: not-allowed;
-}
-
-textarea.form-control {
-    min-height: 100px;
-    resize: vertical;
-}
-
-select.form-control {
-    cursor: pointer;
-}
-
-.file-input {
-    padding: 8px;
-    border: 2px dashed #ced4da;
-    border-radius: 6px;
-    background: #f8f9fa;
-    transition: all 0.3s ease;
-}
-
-.file-input:hover {
-    border-color: #667eea;
-    background: rgba(102, 126, 234, 0.1);
-}
-
-.importance-options {
-    display: flex;
-    gap: 15px;
-    margin-top: 8px;
-}
-
-.importance-option {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.importance-option input[type="radio"] {
-    margin: 0;
-}
-
-.importance-option label {
-    margin: 0;
-    font-weight: normal;
-    cursor: pointer;
-    padding: 6px 12px;
-    border-radius: 15px;
-    transition: all 0.3s ease;
-}
-
-.importance-option.important label {
-    background: rgba(255, 68, 68, 0.1);
-    color: #ff4444;
-}
-
-.importance-option.notice label {
-    background: rgba(255, 204, 0, 0.1);
-    color: #ffcc00;
-}
-
-.importance-option.contact label {
-    background: rgba(68, 68, 255, 0.1);
-    color: #4444ff;
-}
-
-.importance-option input[type="radio"]:checked + label {
-    font-weight: 600;
-    transform: scale(1.05);
-}
-
-/* ログインフォーム */
-.login-container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.login-box {
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-}
-
-.login-box h2 {
-    margin-bottom: 30px;
-    color: #495057;
-    font-size: 14px;
-}
-
-.login-box .form-group {
-    text-align: left;
-    margin-bottom: 20px;
-}
-
-.login-box .btn {
-    width: 100%;
-    padding: 12px;
-    font-size: 14px;
-    margin-top: 10px;
-}
-
-.back-link {
-    display: inline-block;
-    margin-top: 20px;
-    color: #6c757d;
-    text-decoration: none;
-    font-size: 12px;
-}
-
-.back-link:hover {
-    color: #495057;
-}
-
-/* 管理画面 */
 .admin-container {
     padding: 20px;
 }
@@ -670,7 +757,72 @@ select.form-control {
     color: #721c24;
 }
 
-/* カレンダースタイル */
+/* =============================================== */
+/* 6. login.php スタイル */
+/* =============================================== */
+
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-box {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-box h2 {
+    margin-bottom: 30px;
+    color: #495057;
+    font-size: 14px;
+}
+
+.login-box .form-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.login-box .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.login-box .btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 20px;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+.back-link:hover {
+    color: #495057;
+}
+
+
+/* =============================================== */
+/* 7. calendar.php スタイル */
+/* (注: フィルター等のスタイルは calendar.php 内の <style> タグで定義されています) */
+/* =============================================== */
+
 .calendar-container {
     background: white;
     border-radius: 10px;
@@ -815,12 +967,6 @@ select.form-control {
     text-align: center;
 }
 
-.form-grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-}
-
 .color-picker-group {
     display: flex;
     gap: 10px;
@@ -842,89 +988,84 @@ select.form-control {
     flex: 1;
 }
 
-/* モーダル */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(5px);
+/* =============================================== */
+/* 8. change_password.php スタイル */
+/* =============================================== */
+
+.password-container { max-width: 480px; margin: 50px auto; padding: 0 20px; }
+.password-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }   
+.password-header h2 { color: #495057; font-size: 14px; margin-bottom: 10px; }
+.password-box .form-group { margin-bottom: 20px; }
+.password-box .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #495057; font-size: 14px; }
+.password-input-wrapper { position: relative; }
+.password-input-wrapper input { padding-right: 45px; }
+.toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #6c757d; cursor: pointer; font-size: 16px; padding: 5px; }
+.button-group { display: flex; gap: 10px; margin-top: 30px; }
+.button-group .btn { flex: 1; justify-content: center; padding: 12px; }
+
+/* .password-header svg (change_password.php から移動) */
+.password-header svg {
+    width: 48px;
+    height: 48px;
+    fill: #667eea;
+    margin-bottom: 15px;
 }
 
-.modal.show {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* アラート内のSVGアイコンのスタイル (change_password.php から移動) */
+.alert { padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+.alert svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0; /* 縮まないように設定 */
 }
 
-.modal-content {
-    background: white;
-    border-radius: 10px;
-    padding: 25px;
-    max-width: 500px;
-    width: 90%;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    animation: modalShow 0.3s ease;
+/* <div class="alert alert-success"> (icons/common_circle-ok.svg) */
+.alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.alert-success svg {
+    fill: #155724;
 }
 
-@keyframes modalShow {
-    from {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+/* <div class="alert alert-error"> (icons/common_circle-ng.svg) */
+.alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.alert-error svg {
+    fill: #721c24;
 }
 
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #e9ecef;
+/* <div class="password-header"> (icons/common_key.svg) */
+.password-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e9ecef; }
+.password-header svg {
+    width: 40px;
+    height: 40px;
+    fill: #667eea;
+    margin-bottom: 15px;
+} 
+
+/* <div class="user-info"> (icons/common_user.svg) */
+.user-info { background: rgba(102, 126, 234, 0.1); padding: 12px; border-radius: 8px; text-align: center; font-size: 14px; color: #495057; margin-bottom: 10px; }
+.user-info svg {
+    width: 25px;
+    height: 25px;
+    fill: #667eea;
+    vertical-align: middle;
+    margin-right: 4px;
 }
 
-.modal-header h3 {
-    margin: 0;
-    color: #495057;
-    font-size: 18px;
+/* =============================================== */
+/* 9. SVGアイコン共通スタイル */
+/* (login.php, change_password.php 等) */
+/* =============================================== */
+
+/* ボタン内のSVGアイコンの色を文字色と合わせる設定 */
+.btn svg {
+    width: 16px; /* アイコンの幅 */
+    height: 16px; /* アイコンの高さ */
+    fill: currentColor; /* 文字色と同じ色で塗りつぶす */
 }
 
-.close-modal {
-    background: none;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: #6c757d;
-    padding: 5px;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-}
+/* =============================================== */
+/* 10. レスポンシブデザイン */
+/* =============================================== */
 
-.close-modal:hover {
-    background: #f8f9fa;
-    color: #495057;
-}
-
-.modal-footer {
-    margin-top: 25px;
-    padding-top: 15px;
-    border-top: 1px solid #e9ecef;
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-/* レスポンシブデザイン */
 @media (max-width: 1200px) {
     .main-content {
         grid-template-columns: 200px 1fr 220px;
@@ -987,12 +1128,4 @@ select.form-control {
         min-height: 80px;
         padding: 5px;
     }
-}
-/* ボタン内のSVGアイコンの色を文字色と合わせる設定 */
-.btn svg {
-    width: 16px; /* アイコンの幅 */
-    height: 16px; /* アイコンの高さ */
-    fill: currentColor; /* 文字色と同じ色で塗りつぶす */
-    vertical-align: middle;
-    margin-right: 4px;
 }

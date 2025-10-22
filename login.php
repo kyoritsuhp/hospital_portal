@@ -109,14 +109,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST">
                 <div class="form-group">
                     <label for="user_id">
-                        <img src="icons/common_user.svg" alt="職員ID" width="14" height="14" style="vertical-align: middle; margin-right: 4px;">
+                        <img src="icons/common_user.svg" alt="職員ID" width="14" height="14">
                         職員ID
                     </label>
                     <input type="text" id="user_id" name="user_id" class="form-control" value="<?= htmlspecialchars($_POST['user_id'] ?? '') ?>" placeholder="職員IDを入力" required autofocus>
                 </div>
                 <div class="form-group">
                     <label for="password">
-                        <img src="icons/common_passward.svg" alt="パスワード" width="14" height="14" style="vertical-align: middle; margin-right: 4px;">
+                        <img src="icons/common_passward.svg" alt="パスワード" width="14" height="14">
                         パスワード
                     </label>
                     <input type="password" id="password" name="password" class="form-control" placeholder="パスワードを入力" required>
@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 				
             </form>
             <a href="index.php" class="back-link">
-				<img src="icons/common_arrow-left.svg" alt="トップページに戻る" width="14" height="14" style="vertical-align: middle; margin-right: 4px;">
+				<img src="icons/common_arrow-left.svg" alt="トップページに戻る" width="14" height="14">
                 トップページに戻る
             </a>
         </div>

@@ -1,6 +1,9 @@
 <?php
 // ファイル名称: change_password.php
 // 更新日時: 2025-10-08 (jinji連携改修、パスワード変更機能再実装)
+// アイコンをローカルSVGファイルに置換: 2025-10-15
+// アイコン(fas fa-key)をcommon_key.svgに置換: 2025-10-21
+// アイコン(alert-success)をcommon_circle-ok.svgに置換: 2025-10-21
 
 require_once 'config.php';
 
@@ -97,50 +100,71 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>パスワード変更 - 協立病院ポータル</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        .password-container { max-width: 480px; margin: 50px auto; padding: 0 20px; }
-        .password-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .password-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #e9ecef; }
-        .password-header i { font-size: 48px; color: #667eea; margin-bottom: 15px; }
-        .password-header h2 { color: #495057; font-size: 14px; margin-bottom: 10px; }
-        .user-info { background: rgba(102, 126, 234, 0.1); padding: 12px; border-radius: 8px; text-align: center; font-size: 14px; color: #495057; margin-bottom: 10px; }
-        .alert { padding: 12px 15px; border-radius: 6px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #495057; font-size: 14px; }
-        .password-input-wrapper { position: relative; }
-        .password-input-wrapper input { padding-right: 45px; }
-        .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #6c757d; cursor: pointer; font-size: 16px; padding: 5px; }
-        .button-group { display: flex; gap: 10px; margin-top: 30px; }
-        .button-group .btn { flex: 1; justify-content: center; padding: 12px; }
-    </style>
 </head>
 <body>
     <div class="container">
         <header class="header">
-            <h1><i class="fas fa-hospital"></i> 協立病院ポータル</h1>
+            <h1>
+                <?php
+                    $icon_path = 'icons/common_hospital.svg';
+                    if (file_exists($icon_path)) {
+                    echo file_get_contents($icon_path);
+                    }
+                ?>協立病院ポータル
+            </h1>
+
             <div class="header-actions">
                 <span class="welcome">ようこそ、<?= htmlspecialchars($current_user['username']) ?>さん</span>
                 <a href="index.php" class="btn btn-secondary"><i class="fas fa-home"></i> ホームへ戻る</a>
             </div>
         </header>
+
         <div class="password-container">
-            <div class="password-box">
-                <div class="password-header">
-                    <i class="fas fa-key"></i>
-                    <h2>パスワード変更</h2>
-                    <div class="user-info">
-                        <i class="fas fa-user"></i> <?= htmlspecialchars($current_user['username']) ?> (職員ID: <?= htmlspecialchars($current_user['user_id']) ?>)
-                    </div>
+        <div class="password-box">
+
+        <div class="password-header">
+            <?php
+                $icon_path = 'icons/common_key.svg';
+                if (file_exists($icon_path)) {
+                echo file_get_contents($icon_path);
+                }
+                ?>
+                <h2>パスワード変更</h2>
+
+		<div class="user-info">
+    		<?php
+       		    $icon_path = 'icons/common_user.svg';
+        	    if (file_exists($icon_path)) {
+                echo file_get_contents($icon_path);
+                }    
+                ?>
+                <?= htmlspecialchars($current_user['username']) ?> 
+        </div>  
                 </div>
 
-                <?php if ($error): ?>
-                    <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i><span><?= htmlspecialchars($error) ?></span></div>
-                <?php endif; ?>
-                <?php if ($success): ?>
-                    <div class="alert alert-success"><i class="fas fa-check-circle"></i><span><?= htmlspecialchars($success) ?></span></div>
-                <?php endif; ?>
+    <?php if ($error): ?>
+        <div class="alert alert-error">
+            <?php
+            $icon_path = 'icons/common_circle-ng.svg';
+            if (file_exists($icon_path)) {
+            echo file_get_contents($icon_path);
+            } 
+            ?>
+            <span><?= htmlspecialchars($error) ?></span>
+        </div>
+
+    <?php endif; ?>
+    <?php if ($success): ?>
+        <div class="alert alert-success">
+            <?php // <i class="fas fa-check-circle"></i> を icons/common_circle-ok.svg に変更
+            $icon_path = 'icons/common_circle-ok.svg';
+            if (file_exists($icon_path)) {
+            echo file_get_contents($icon_path);
+            } 
+            ?>
+            <span><?= htmlspecialchars($success) ?></span>
+        </div>
+    <?php endif; ?>
 
                 <form method="POST" action="change_password.php">
                     <div class="form-group">
@@ -189,5 +213,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </script>
 </body>
 </html>
-
-
