@@ -3,6 +3,7 @@
 // 更新日時: 2025-10-03
 // 不要メニュー項目を削除: 2025-10-15
 // 健診問診票リンクの表示/非表示機能追加: 2025-10-20
+// ★ 健診担当者リンク (admin=1 または kenshin=1 で表示) を修正: 2025-10-24
 
 require_once 'config.php';
 
@@ -10,13 +11,13 @@ require_once 'config.php';
 $stmt = $pdo->prepare("
     SELECT n.*, u.username,
            GROUP_CONCAT(
-               CONCAT(na.id, ':', na.file_name, ':', na.file_path, ':', na.file_type) 
+               CONCAT(na.id, ':', na.file_name, ':', na.file_path, ':', na.file_type)
                SEPARATOR '|'
            ) as attachments
-    FROM notices n 
-    LEFT JOIN users u ON n.created_by = u.id 
+    FROM notices n
+    LEFT JOIN users u ON n.created_by = u.id
     LEFT JOIN notice_attachments na ON n.id = na.notice_id
-    WHERE n.is_visible = 1 
+    WHERE n.is_visible = 1
     AND (n.display_start IS NULL OR n.display_start <= CURDATE())
     AND (n.display_end IS NULL OR n.display_end >= CURDATE())
     GROUP BY n.id
@@ -64,12 +65,12 @@ $notices = $stmt->fetchAll();
                 <h3><i class="fas fa-bars"></i> メニュー</h3>
                 <ul class="menu-list">
                     <li><a href="index.php"><i class="fas fa-home"></i> ホーム</a></li>
-                    
+
                     <?php // 健診問診票リンクの表示制御 (役職と kenshin/config.json を参照) ?>
                     <?php if (shouldShowKenshinLink()): ?>
                     <li><a href="http://localhost/kenshin/"><i class="fas fa-file-medical"></i> 健診問診票</a></li>
                     <?php endif; ?>
-                    
+
                 </ul>
             </nav>
 
@@ -86,10 +87,10 @@ $notices = $stmt->fetchAll();
                         </div>
                     <?php else: ?>
                         <?php foreach ($notices as $index => $notice): ?>
-                            <div class="notice-item <?= $index >= 10 ? 'notice-hidden' : '' ?>" 
+                            <div class="notice-item <?= $index >= 10 ? 'notice-hidden' : '' ?>"
                                  data-importance="<?= htmlspecialchars($notice['importance']) ?>"
                                  style="border-left: 4px solid <?= getImportanceColor($notice['importance']) ?>">
-                                
+
                                 <div class="notice-header">
                                     <div class="notice-meta">
                                         <span class="importance-badge" style="background-color: <?= getImportanceColor($notice['importance']) ?>">
@@ -113,9 +114,9 @@ $notices = $stmt->fetchAll();
                                     <div class="notice-attachments">
                                         <h4><i class="fas fa-paperclip"></i> 添付ファイル</h4>
                                         <div class="attachment-list">
-                                            <?php 
+                                            <?php
                                             $attachments = explode('|', $notice['attachments']);
-                                            foreach ($attachments as $attachment): 
+                                            foreach ($attachments as $attachment):
                                                 if (empty($attachment)) continue;
                                                 list($att_id, $file_name, $file_path, $file_type) = explode(':', $attachment, 4);
                                             ?>
@@ -140,7 +141,7 @@ $notices = $stmt->fetchAll();
                         <?php if (count($notices) > 10): ?>
                             <div class="toggle-container">
                                 <button id="toggleNotices" class="btn btn-outline">
-                                    <i class="fas fa-chevron-down"></i> 
+                                    <i class="fas fa-chevron-down"></i>
                                     <span>さらに表示する (<?= count($notices) - 10 ?>件)</span>
                                 </button>
                             </div>
@@ -165,6 +166,16 @@ $notices = $stmt->fetchAll();
                             <i class="fas fa-cogs"></i>
                             <span>管理画面</span>
                         </a>
+
+                        <?php // ★ 健診担当者リンク (admin=1 または kenshin=1 の場合) - 修正 ?>
+                        <?php if ((isset($_SESSION['admin']) && $_SESSION['admin'] == 1) || (isset($_SESSION['kenshin']) && $_SESSION['kenshin'] == 1)): ?>
+                        <a href="../kenshin/admin_dashboard.php" class="quick-link" target="_blank">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>健診担当者</span>
+                        </a>
+                        <?php endif; ?>
+                        <?php // ★ ここまで修正 ?>
+
                         <a href="change_password.php" class="quick-link">
                             <i class="fas fa-key"></i>
                             <span>パスワード変更</span>

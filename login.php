@@ -4,6 +4,7 @@
 // アイコンをオフライン対応のSVGに置換: 2025-10-15
 // アイコンを画像ファイルに置換: 2025-10-15
 // 役職(position)をセッションに保存するよう変更: 2025-10-20
+// ★ kenshin, admin 権限をセッションに保存するよう変更: 2025-10-24
 
 require_once 'config.php';
 
@@ -66,6 +67,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['user_id'] = $final_portal_user['id'];
                     $_SESSION['user'] = $final_portal_user['username'];
                     $_SESSION['position'] = $staff['position']; // <-- 役職情報をセッションに保存
+                    $_SESSION['admin'] = $staff['admin']; // ★ 追加
+                    $_SESSION['kenshin'] = $staff['kenshin']; // ★ 追加
                     $_SESSION['last_activity'] = time();
 
                     header('Location: index.php');
