@@ -1,6 +1,7 @@
 <?php
 // ファイル名称: admin.php
 // 更新日時: 2025-10-10 (編集権限機能の追加)
+// 修正: 2025-11-04 (権限チェックを $_SESSION['admin'] 基準に変更)
 
 require_once 'config.php';
 
@@ -19,43 +20,68 @@ if (isset($_SESSION['error_message'])) {
     unset($_SESSION['error_message']);
 }
 
+// ★ 現在のログインユーザー情報を先に取得
+$currentUser = getCurrentUser();
+
 // POSTアクション処理
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     $notice_id = $_POST['notice_id'] ?? 0;
-    
-    switch ($action) {
-        case 'delete':
-            try {
-                // 添付ファイルをサーバーから削除
-                $stmt = $pdo->prepare("SELECT file_path FROM notice_attachments WHERE notice_id = ?");
-                $stmt->execute([$notice_id]);
-                $attachments = $stmt->fetchAll();
-                
-                foreach ($attachments as $attachment) {
-                    if (file_exists($attachment['file_path'])) {
-                        unlink($attachment['file_path']);
+
+    // ★ 権限チェック (Admin or Author)
+    $canManage = false;
+    if ($notice_id > 0 && $currentUser) {
+        // 投稿者情報を取得
+        $stmt_auth = $pdo->prepare("SELECT created_by FROM notices WHERE id = ?");
+        $stmt_auth->execute([$notice_id]);
+        $notice_author = $stmt_auth->fetch();
+
+        if ($notice_author) {
+            // セッションのadminフラグ、または投稿者IDをチェック
+            if ((isset($_SESSION['admin']) && $_SESSION['admin'] == 1) || $currentUser['id'] == $notice_author['created_by']) {
+                $canManage = true;
+            }
+        }
+    }
+
+    // ★ 権限がある場合のみ処理を実行
+    if ($canManage) {
+        switch ($action) {
+            case 'delete':
+                try {
+                    // 添付ファイルをサーバーから削除
+                    $stmt = $pdo->prepare("SELECT file_path FROM notice_attachments WHERE notice_id = ?");
+                    $stmt->execute([$notice_id]);
+                    $attachments = $stmt->fetchAll();
+                    
+                    foreach ($attachments as $attachment) {
+                        if (file_exists($attachment['file_path'])) {
+                            unlink($attachment['file_path']);
+                        }
                     }
+                    
+                    // 投稿をDBから削除 (関連する添付ファイルもCASCADEで削除される)
+                    $stmt = $pdo->prepare("DELETE FROM notices WHERE id = ?");
+                    $stmt->execute([$notice_id]);
+                    $message = '投稿を削除しました。';
+                } catch (PDOException $e) {
+                    $error = '削除に失敗しました。' . $e->getMessage();
                 }
+                break;
                 
-                // 投稿をDBから削除 (関連する添付ファイルもCASCADEで削除される)
-                $stmt = $pdo->prepare("DELETE FROM notices WHERE id = ?");
-                $stmt->execute([$notice_id]);
-                $message = '投稿を削除しました。';
-            } catch (PDOException $e) {
-                $error = '削除に失敗しました。' . $e->getMessage();
-            }
-            break;
-            
-        case 'toggle_visibility':
-            try {
-                $stmt = $pdo->prepare("UPDATE notices SET is_visible = !is_visible WHERE id = ?");
-                $stmt->execute([$notice_id]);
-                $message = '表示設定を変更しました。';
-            } catch (PDOException $e) {
-                $error = '設定変更に失敗しました。';
-            }
-            break;
+            case 'toggle_visibility':
+                try {
+                    $stmt = $pdo->prepare("UPDATE notices SET is_visible = !is_visible WHERE id = ?");
+                    $stmt->execute([$notice_id]);
+                    $message = '表示設定を変更しました。';
+                } catch (PDOException $e) {
+                    $error = '設定変更に失敗しました。';
+                }
+                break;
+        }
+    } else if ($notice_id > 0) {
+        // 権限がない場合のエラー
+        $error = 'この操作を行う権限がありません。';
     }
 }
 
@@ -71,8 +97,7 @@ $stmt = $pdo->prepare("
 $stmt->execute();
 $notices = $stmt->fetchAll();
 
-// 現在のログインユーザー情報を取得
-$currentUser = getCurrentUser();
+// (currentUserの取得はPOST処理より前に移動済み)
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -80,7 +105,8 @@ $currentUser = getCurrentUser();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理画面 - 協立病院ポータル</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="common.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -193,27 +219,38 @@ $currentUser = getCurrentUser();
                                     <td><?= htmlspecialchars($notice['hostname'] ?? 'N/A') ?></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <?php // 編集ボタンは投稿者本人かadminのみに表示 ?>
-                                            <?php if ($currentUser['user_id'] === 'admin' || $currentUser['id'] == $notice['created_by']): ?>
+                                            <?php
+                                                // ★ 権限チェック (Admin or Author)
+                                                // (isset($_SESSION['admin']) は login.php でセットされる)
+                                                // ($currentUser['id'] は ログインユーザーの users.id)
+                                                // ($notice['created_by'] は 投稿者の users.id)
+                                                $canManage = (isset($_SESSION['admin']) && $_SESSION['admin'] == 1) || $currentUser['id'] == $notice['created_by'];
+                                            ?>
+
+                                            <?php // 編集ボタン ?>
+                                            <?php if ($canManage): ?>
                                                 <a href="edit_post.php?id=<?= $notice['id'] ?>" class="btn btn-outline" style="border-color:#007bff; color:#007bff" title="編集">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
                                             <?php endif; ?>
                                             
-                                            <form method="POST" style="display: inline;" onsubmit="return confirm('表示設定を変更しますか？')">
-                                                <input type="hidden" name="action" value="toggle_visibility">
-                                                <input type="hidden" name="notice_id" value="<?= $notice['id'] ?>">
-                                                <button type="submit" class="btn <?= $notice['is_visible'] ? 'btn-secondary' : 'btn-primary' ?>" title="<?= $notice['is_visible'] ? '非表示にする' : '表示する' ?>">
-                                                    <i class="fas <?= $notice['is_visible'] ? 'fa-eye-slash' : 'fa-eye' ?>"></i>
-                                                </button>
-                                            </form>
-                                            <form method="POST" style="display: inline;" onsubmit="return confirm('この投稿を完全に削除します。よろしいですか？')">
-                                                <input type="hidden" name="action" value="delete">
-                                                <input type="hidden" name="notice_id" value="<?= $notice['id'] ?>">
-                                                <button type="submit" class="btn btn-danger" title="削除">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            <?php // ★ 権限がある場合のみ表示 ?>
+                                            <?php if ($canManage): ?>
+                                                <form method="POST" style="display: inline;" onsubmit="return confirm('表示設定を変更しますか？')">
+                                                    <input type="hidden" name="action" value="toggle_visibility">
+                                                    <input type="hidden" name="notice_id" value="<?= $notice['id'] ?>">
+                                                    <button type="submit" class="btn <?= $notice['is_visible'] ? 'btn-secondary' : 'btn-primary' ?>" title="<?= $notice['is_visible'] ? '非表示にする' : '表示する' ?>">
+                                                        <i class="fas <?= $notice['is_visible'] ? 'fa-eye-slash' : 'fa-eye' ?>"></i>
+                                                    </button>
+                                                </form>
+                                                <form method="POST" style="display: inline;" onsubmit="return confirm('この投稿を完全に削除します。よろしいですか？')">
+                                                    <input type="hidden" name="action" value="delete">
+                                                    <input type="hidden" name="notice_id" value="<?= $notice['id'] ?>">
+                                                    <button type="submit" class="btn btn-danger" title="削除">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            <?php endif; // $canManage ?>
                                         </div>
                                     </td>
                                 </tr>

@@ -4,8 +4,17 @@
 // 不要メニュー項目を削除: 2025-10-15
 // 健診問診票リンクの表示/非表示機能追加: 2025-10-20
 // ★ 健診担当者リンク (admin=1 または kenshin=1 で表示) を修正: 2025-10-24
+// (フィルター機能のJavaScriptを実装: 2025-10-31)
+// 修正: 2025-11-04 (投稿成功メッセージの表示機能を追加)
 
 require_once 'config.php';
+
+// ★ セッションから成功メッセージを取得
+$success_message = '';
+if (isset($_SESSION['success_message'])) {
+    $success_message = $_SESSION['success_message'];
+    unset($_SESSION['success_message']); // 再読み込み時に表示させない
+}
 
 // 周知掲示板の取得（表示期間内かつ表示フラグONのもの）
 $stmt = $pdo->prepare("
@@ -33,8 +42,8 @@ $notices = $stmt->fetchAll();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>協立病院ポータル</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
     <div class="container">
@@ -60,12 +69,29 @@ $notices = $stmt->fetchAll();
             </div>
         </header>
 
+        <?php if ($success_message): ?>
+            <div class="alert alert-success" style="margin: 20px; padding: 12px 15px; border-radius: 6px; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: flex; align-items: center; gap: 10px;">
+                <?php
+                    // common_circle-ok.svg を読み込む (change_password.php と同様の方式)
+                    $icon_path = 'icons/common_circle-ok.svg';
+                    if (file_exists($icon_path)) {
+                        $svg_content = file_get_contents($icon_path);
+                        echo str_replace(
+                            '<svg', 
+                            '<svg style="width: 16px; height: 16px; fill: currentColor; flex-shrink: 0;"', 
+                            $svg_content
+                        );
+                    } 
+                ?>
+                <span><?= htmlspecialchars($success_message) ?></span>
+            </div>
+        <?php endif; ?>
+
         <div class="main-content">
             <nav class="sidebar sidebar-left">
                 <h3><i class="fas fa-bars"></i> メニュー</h3>
                 <ul class="menu-list">
                     <li><a href="index.php"><i class="fas fa-home"></i> ホーム</a></li>
-
                     <?php // 健診問診票リンクの表示制御 (役職と kenshin/config.json を参照) ?>
                     <?php if (shouldShowKenshinLink()): ?>
                     <li><a href="http://localhost/kenshin/"><i class="fas fa-file-medical"></i> 健診問診票</a></li>
@@ -191,7 +217,7 @@ $notices = $stmt->fetchAll();
                             <span class="stat-label">重要</span>
                         </div>
                         <div class="stat-item notice" onclick="filterNotices('notice')" style="cursor: pointer;" title="周知投稿のみ表示">
-                            <span class_number"><?= count(array_filter($notices, function($n) { return $n['importance'] === 'notice'; })) ?></span>
+                            <span class="stat-number"><?= count(array_filter($notices, function($n) { return $n['importance'] === 'notice'; })) ?></span>
                             <span class="stat-label">周知</span>
                         </div>
                         <div class="stat-item contact" onclick="filterNotices('contact')" style="cursor: pointer;" title="連絡投稿のみ表示">
@@ -210,7 +236,136 @@ $notices = $stmt->fetchAll();
     </div>
 
     <script>
-        // (省略) JavaScript部分は変更ありません
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtn = document.getElementById('toggleNotices');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    const hiddenNotices = document.querySelectorAll('.notice-item.notice-hidden');
+                    const isHidden = toggleBtn.classList.toggle('toggled');
+                    
+                    hiddenNotices.forEach(notice => {
+                        // フィルターで非表示になっているものは、トグル操作でも非表示を維持
+                        if (notice.style.display !== 'none') {
+                            notice.style.display = isHidden ? 'block' : '';
+                        }
+                    });
+
+                    // フィルターが適用されている場合、トグルボタンは機能しないように見せる
+                    // (実際にはトグルされるが、フィルターで非表示のものは表示されない)
+                    const activeFilter = document.querySelector('.stat-item.stat-active');
+                    if (activeFilter) {
+                         // フィルター中は「さらに表示」ボタンを非表示にする
+                         toggleBtn.style.display = 'none';
+                    } else {
+                        // フィルター解除時はボタンのテキストを更新
+                        const icon = toggleBtn.querySelector('i');
+                        const span = toggleBtn.querySelector('span');
+                        
+                        if (isHidden) {
+                            icon.classList.remove('fa-chevron-down');
+                            icon.classList.add('fa-chevron-up');
+                            span.textContent = '折りたたむ';
+                        } else {
+                            icon.classList.remove('fa-chevron-up');
+                            icon.classList.add('fa-chevron-down');
+                            span.textContent = `さらに表示する (${hiddenNotices.length}件)`;
+                        }
+                    }
+                });
+            }
+        });
+
+        function filterNotices(importance) {
+            const notices = document.querySelectorAll('.notice-item');
+            const toggleBtnContainer = document.querySelector('.toggle-container');
+            const statButtons = document.querySelectorAll('.stat-item');
+            const allNotices = <?php echo count($notices); ?>;
+            const initialVisibleCount = 10;
+
+            // フィルターボタンのアクティブ状態を更新
+            statButtons.forEach(btn => btn.classList.remove('stat-active'));
+            if (importance !== 'all') {
+                const activeButton = document.querySelector(`.stat-item.${importance}`);
+                if (activeButton) {
+                    activeButton.classList.add('stat-active');
+                }
+            }
+
+            let visibleCount = 0;
+
+            notices.forEach((notice, index) => {
+                const noticeImportance = notice.getAttribute('data-importance');
+                const isHiddenByDefault = notice.classList.contains('notice-hidden');
+                
+                if (importance === 'all' || noticeImportance === importance) {
+                    // 「すべて」または重要度が一致する場合
+                    
+                    if (importance === 'all') {
+                        // 「すべて」の場合、デフォルトの10件表示ロジックに従う
+                        if (index < initialVisibleCount) {
+                            notice.style.display = 'block'; // 表示
+                        } else {
+                            // 11件目以降は .notice-hidden クラスに従う
+                            notice.style.display = ''; // CSSの .notice-hidden に従う
+                        }
+                    } else {
+                        // フィルター中の場合、件数制限なくすべて表示
+                        notice.style.display = 'block';
+                    }
+                    visibleCount++;
+                    
+                } else {
+                    // 重要度が一致しない場合
+                    notice.style.display = 'none'; // 非表示
+                }
+            });
+
+            // 「さらに表示」ボタンの表示/非表示を制御
+            if (toggleBtnContainer) {
+                if (importance === 'all' && allNotices > initialVisibleCount) {
+                    // 「すべて」表示で、10件より多い場合のみ表示
+                    toggleBtnContainer.style.display = 'block';
+                    
+                    // フィルター解除時にボタンの状態をリセット
+                    const toggleBtn = document.getElementById('toggleNotices');
+                    toggleBtn.classList.remove('toggled');
+                    toggleBtn.querySelector('i').classList.remove('fa-chevron-up');
+                    toggleBtn.querySelector('i').classList.add('fa-chevron-down');
+                    toggleBtn.querySelector('span').textContent = `さらに表示する (${allNotices - initialVisibleCount}件)`;
+
+                } else {
+                    // フィルター中、または10件以下の場合は非表示
+                    toggleBtnContainer.style.display = 'none';
+                }
+            }
+            
+            // 投稿がない場合のメッセージ表示
+            const noNoticesMessage = document.querySelector('.no-notices');
+            if (noNoticesMessage) {
+                 if (visibleCount === 0 && importance !== 'all') {
+                     // フィルター結果が0件の場合
+                     noNoticesMessage.style.display = 'block';
+                     noNoticesMessage.querySelector('p').textContent = 'この条件に一致する投稿はありません。';
+                 } else if (allNotices === 0) {
+                     // もともと投稿が0件の場合
+                     noNoticesMessage.style.display = 'block';
+                     noNoticesMessage.querySelector('p').textContent = '現在表示する投稿はありません。';
+                 } else {
+                     // 投稿がある場合
+                     noNoticesMessage.style.display = 'none';
+                 }
+            }
+        }
+
+        // 初期ロード時に、投稿が0件の場合のメッセージを正しく処理
+        document.addEventListener('DOMContentLoaded', function() {
+            if (<?php echo count($notices); ?> === 0) {
+                const noNoticesMessage = document.querySelector('.no-notices');
+                if (noNoticesMessage) {
+                    noNoticesMessage.style.display = 'block';
+                }
+            }
+        });
     </script>
 </body>
 </html>

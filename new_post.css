@@ -1,0 +1,122 @@
+/*
+ * ファイル名称: new_post.css
+ * 概要: new_post.php 固有のスタイル
+ * (style.css から関連するフォーム共通スタイルを抽出)
+ */
+
+/* =============================================== */
+/* 2. フォーム共通スタイル */
+/* (new_post.php, edit_post.php) */
+/* =============================================== */
+
+/* .form-container (new_post.php, edit_post.php) */
+.form-container {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* .form-group (共通フォームグループ) */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 13px;
+}
+
+/* .form-control (共通フォーム入力) */
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.25);
+}
+
+.form-control[readonly] {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+select.form-control {
+    cursor: pointer;
+}
+
+.file-input {
+    padding: 8px;
+    border: 2px dashed #ced4da;
+    border-radius: 6px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.file-input:hover {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+/* .importance-options (new_post.php, edit_post.php) */
+.importance-options {
+    display: flex;
+    gap: 15px;
+    margin-top: 8px;
+}
+
+.importance-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.importance-option input[type="radio"] {
+    margin: 0;
+}
+
+.importance-option label {
+    margin: 0;
+    font-weight: normal;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.importance-option.important label {
+    background: rgba(255, 68, 68, 0.1);
+    color: #ff4444;
+}
+
+.importance-option.notice label {
+    background: rgba(255, 204, 0, 0.1);
+    color: #ffcc00;
+}
+
+.importance-option.contact label {
+    background: rgba(68, 68, 255, 0.1);
+    color: #4444ff;
+}
+
+.importance-option input[type="radio"]:checked + label {
+    font-weight: 600;
+    transform: scale(1.05);
+}

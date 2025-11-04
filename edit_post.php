@@ -1,6 +1,7 @@
 <?php
 // ファイル名称: edit_post.php
 // 更新日時: 2025-10-10 (編集権限機能の追加)
+// 修正: 2025-11-04 (権限チェックを $_SESSION['admin'] 基準に変更)
 
 require_once 'config.php';
 
@@ -34,8 +35,9 @@ if (!$notice) {
 // --- 権限チェック ---
 $currentUser = getCurrentUser();
 
-// 投稿者本人か、管理者(admin)でなければアクセスを拒否
-if ($currentUser['user_id'] !== 'admin' && $currentUser['id'] != $notice['created_by']) {
+// ★ 投稿者本人か、管理者(セッションのadminフラグ)でなければアクセスを拒否
+// (isset($_SESSION['admin']) は login.php でセットされる)
+if ( !(isset($_SESSION['admin']) && $_SESSION['admin'] == 1) && $currentUser['id'] != $notice['created_by'] ) {
     $_SESSION['error_message'] = 'この投稿を編集する権限がありません。';
     header('Location: admin.php');
     exit;

@@ -1,0 +1,174 @@
+/*
+ * ファイル名称: calendar.css
+ * 概要: calendar.php 固有のスタイル
+ */
+
+/* =============================================== */
+/* 7. calendar.php スタイル */
+/* (注: フィルター等のスタイルは calendar.php 内の <style> タグで定義されています) */
+/* =============================================== */
+
+.calendar-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.calendar-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.calendar-nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.calendar-nav button {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.calendar-nav button:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+.calendar-nav h3 {
+    margin: 0;
+    font-size: 18px;
+    min-width: 200px;
+    text-align: center;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar-day-header {
+    background: #f8f9fa;
+    padding: 10px;
+    text-align: center;
+    font-weight: 600;
+    color: #495057;
+    font-size: 12px;
+    border-right: 1px solid #e9ecef;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.calendar-day {
+    min-height: 100px;
+    padding: 8px;
+    border-right: 1px solid #e9ecef;
+    border-bottom: 1px solid #e9ecef;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: relative;
+}
+
+.calendar-day:hover {
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.calendar-day.other-month {
+    background: #f8f9fa;
+    color: #adb5bd;
+}
+
+.calendar-day.today {
+    background: rgba(102, 126, 234, 0.1);
+    font-weight: bold;
+}
+
+.day-number {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.calendar-event {
+    background: #667eea;
+    color: white;
+    padding: 2px 6px;
+    margin: 1px 0;
+    border-radius: 3px;
+    font-size: 10px;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.calendar-event:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.btn.btn-today {
+    background: rgba(255,255,255,0.2);
+}
+
+.calendar-event-time {
+    font-size: 9px;
+    opacity: 0.8;
+}
+
+.sidebar-help-text {
+    font-size: 12px;
+    line-height: 1.4;
+    color: #6c757d;
+}
+
+.sidebar-widget {
+    margin-top: 20px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.sidebar-widget h4 {
+    font-size: 13px;
+    margin-bottom: 10px;
+    color: #495057;
+}
+
+.sidebar-widget .widget-content {
+    font-size: 20px;
+    font-weight: bold;
+    color: #667eea;
+    text-align: center;
+}
+
+.color-picker-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.color-picker-group input[type="color"] {
+    width: 60px;
+    height: 35px;
+    padding: 0;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+}
+
+.color-picker-group select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    flex: 1;
+}

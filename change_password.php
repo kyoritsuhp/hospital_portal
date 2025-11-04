@@ -98,7 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>パスワード変更 - 協立病院ポータル</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="change_password.css">
+    <link rel="stylesheet" href="common.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>

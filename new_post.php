@@ -1,6 +1,7 @@
 <?php
 // ファイル名称: new_post.php
 // 更新日時: 2025-10-06
+// 修正: 2025-11-04 (投稿成功時にindex.phpへリダイレクトしメッセージ表示)
 
 require_once 'config.php';
 
@@ -81,11 +82,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             if ($upload_success && empty($upload_errors)) {
-                // すべて成功
+                // ★ すべて成功
                 $pdo->commit();
-                $message = '投稿が正常に作成されました。';
-                // 成功時はフォームをリセット
-                $_POST = [];
+                
+                // ★ セッションに成功メッセージを保存
+                $_SESSION['success_message'] = '投稿が正常に作成されました。';
+                
+                // ★ index.php にリダイレクト
+                header('Location: index.php');
+                exit;
+
             } else {
                 // 一部ファイルでエラー
                 $pdo->commit(); // 投稿自体は保存
@@ -94,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } else {
                     $message = '投稿は作成されましたが、一部のファイルのアップロードに失敗しました。';
                 }
+                // ★ この場合はリダイレクトせず、現在の画面に $message を表示
             }
             
         } catch (PDOException $e) {
@@ -114,7 +121,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>新規投稿 - 協立病院ポータル</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="new_post.css">
+    <link rel="stylesheet" href="common.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -139,19 +147,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <?php if ($message): ?>
-                    <div class="alert alert-success">
+                    <div class="alert alert-success" style="padding: 12px 15px; border-radius: 6px; background: #d4edda; color: #155724; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
                         <i class="fas fa-check-circle"></i>
-                        <?= htmlspecialchars($message) ?>
-                        <a href="index.php" style="margin-left: 15px;">
-                            <i class="fas fa-arrow-right"></i> ホームで確認する
-                        </a>
+                        <span>
+                            <?= htmlspecialchars($message) ?>
+                            <a href="index.php" style="margin-left: 15px; color: #155724; font-weight: bold;">
+                                <i class="fas fa-arrow-right"></i> ホームで確認する
+                            </a>
+                        </span>
                     </div>
                 <?php endif; ?>
 
                 <?php if ($error): ?>
-                    <div class="alert alert-error">
+                    <div class="alert alert-error" style="padding: 12px 15px; border-radius: 6px; background: #f8d7da; color: #721c24; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <?= htmlspecialchars($error) ?>
+                        <span><?= htmlspecialchars($error) ?></span>
                     </div>
                 <?php endif; ?>
 

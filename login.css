@@ -1,0 +1,64 @@
+/*
+ * ファイル名称: login.css
+ * 概要: login.php 固有のスタイル
+ */
+
+/* =============================================== */
+/* 6. login.php スタイル */
+/* =============================================== */
+
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-box {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.login-box h2 {
+    margin-bottom: 30px;
+    color: #495057;
+    font-size: 14px;
+}
+
+.login-box .form-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.login-box .form-group label {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.login-box .btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 20px;
+    color: #6c757d;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+.back-link:hover {
+    color: #495057;
+}

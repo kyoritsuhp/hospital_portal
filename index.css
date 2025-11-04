@@ -1,0 +1,326 @@
+/*
+ * ファイル名称: index.css
+ * 概要: index.php 固有のスタイル
+ */
+
+/* =============================================== */
+/* 4. index.php スタイル */
+/* =============================================== */
+
+/* .quick-links (index.php 右サイドバー) */
+.quick-links {
+    margin-bottom: 25px;
+}
+
+.quick-link {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 8px;
+    background: white;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #495057;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.quick-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    color: #667eea;
+}
+
+.quick-link i {
+    margin-right: 10px;
+    width: 18px;
+    text-align: center;
+}
+
+/* .notice-summary (index.php 右サイドバー) */
+.notice-summary {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.notice-summary h4 {
+    font-size: 13px;
+    margin-bottom: 12px;
+    color: #495057;
+}
+
+.summary-stats {
+    display: flex;
+    justify-content: space-between;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 8px;
+    border-radius: 6px;
+    flex: 1;
+    margin: 0 2px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.stat-item.stat-active {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border: 2px solid currentColor;
+}
+
+.stat-item.important {
+    background: rgba(255, 68, 68, 0.1);
+    color: #ff4444;
+}
+
+.stat-item.important:hover,
+.stat-item.important.stat-active {
+    background: rgba(255, 68, 68, 0.2);
+}
+
+.stat-item.notice {
+    background: rgba(255, 204, 0, 0.1);
+    color: #ffcc00;
+}
+
+.stat-item.notice:hover,
+.stat-item.notice.stat-active {
+    background: rgba(255, 204, 0, 0.2);
+}
+
+.stat-item.contact {
+    background: rgba(68, 68, 255, 0.1);
+    color: #4444ff;
+}
+
+.stat-item.contact:hover,
+.stat-item.contact.stat-active {
+    background: rgba(68, 68, 255, 0.2);
+}
+
+.stat-number {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.stat-label {
+    font-size: 11px;
+}
+
+/* .notices-container (index.php 投稿一覧) */
+.notices-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.notice-item {
+    background: white;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.notice-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.notice-hidden {
+    display: none;
+}
+
+.notice-header {
+    margin-bottom: 10px;
+}
+
+.notice-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+/* .importance-badge (index.php, admin.php) */
+.importance-badge {
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.notice-date,
+.notice-author {
+    font-size: 11px;
+    color: #6c757d;
+}
+
+.notice-date i,
+.notice-author i {
+    margin-right: 4px;
+}
+
+.notice-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 8px;
+}
+
+.notice-content {
+    color: #495057;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.notice-attachments {
+    border-top: 1px solid #e9ecef;
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+.notice-attachments h4 {
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 8px;
+}
+
+.attachment-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.attachment-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    background: #f8f9fa;
+    border-radius: 15px;
+    text-decoration: none;
+    color: #495057;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.attachment-link:hover {
+    background: #e9ecef;
+    color: #667eea;
+}
+
+.attachment-link i {
+    margin-right: 6px;
+}
+
+/* .no-notices (index.php 投稿なし) */
+.no-notices {
+    text-align: center;
+    padding: 40px;
+    color: #6c757d;
+}
+
+.no-notices i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+/* .toggle-container (index.php もっと見る) */
+.toggle-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/*
+ * =============================================== 
+ * 11. Font Awesome SVG Icon Replacement (Offline)
+ * ===============================================
+ */
+
+/* * 1. Font Awesome <i> タグの基本スタイル
+ * (フォント文字を非表示にし、SVGを表示する領域を確保)
+ */
+.fas {
+    display: inline-block;
+    vertical-align: middle; /* テキストとアイコンの縦位置を揃える */
+    
+    /* フォント文字を非表示にする (font-size: 0; は em を 0 にするので使わない) */
+    text-indent: -9999px; /* テキストを画面外に飛ばす */
+    overflow: hidden;       /* 画面外にはみ出たテキストを隠す */
+    
+    /* SVGを表示するサイズを親要素のフォントサイズに合わせる */
+    width: 1em;
+    height: 1em;
+    
+    /* * マスク機能を使ってSVGを読み込む
+     * (background-color: currentColor で親の文字色を継承)
+     */
+    background-color: currentColor;
+    -webkit-mask-image: var(--svg-icon-url);
+    mask-image: var(--svg-icon-url);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+}
+
+/* * 2. 各アイコンクラスとSVGファイルの紐付け
+ */
+
+/* --- ヘッダー --- */
+.fa-hospital { 
+    --svg-icon-url: url('icons/common_hospital.svg'); 
+    width: 1.2em; /* ヘッダーアイコンのみ少し大きく調整 */
+    height: 1.2em;
+    color: #f8f9fa; /* ヘッダーの文字色に合わせる */
+}
+.fa-plus { --svg-icon-url: url('icons/plus.svg'); }
+.fa-cog { --svg-icon-url: url('icons/cog.svg'); }
+.fa-sign-out-alt { --svg-icon-url: url('icons/sign-out.svg'); }
+.fa-sign-in-alt { --svg-icon-url: url('icons/common_login.svg'); }
+
+/* --- サイドバー (左) --- */
+.fa-bars { --svg-icon-url: url('icons/bars.svg'); width: 1.5em; height: 1.5em;}
+.fa-home { --svg-icon-url: url('icons/home.svg'); width: 1.5em; height: 1.5em;} 
+.fa-file-medical { --svg-icon-url: url('icons/file-medical.svg'); width: 1.5em; height: 1.5em; }
+/* --- メインコンテンツ (掲示板) --- */
+.fa-bullhorn { --svg-icon-url: url('icons/bullhorn.svg'); }
+.fa-info-circle { --svg-icon-url: url('icons/info-circle.svg'); }
+.fa-clock { --svg-icon-url: url('icons/clock.svg'); }
+.fa-user { --svg-icon-url: url('icons/common_user.svg'); }
+.fa-paperclip { --svg-icon-url: url('icons/paperclip.svg'); }
+
+/* 添付ファイル種別 */
+.fa-file { --svg-icon-url: url('icons/file.svg'); }
+.fa-file-image { --svg-icon-url: url('icons/file-image.svg'); }
+.fa-file-pdf { --svg-icon-url: url('icons/file-pdf.svg'); }
+.fa-file-word { --svg-icon-url: url('icons/file-word.svg'); }
+.fa-file-excel { --svg-icon-url: url('icons/file-excel.svg'); }
+
+/* 「さらに表示」ボタン */
+.fa-chevron-down { --svg-icon-url: url('icons/chevron-down.svg'); }
+.fa-chevron-up { --svg-icon-url: url('icons/chevron-up.svg'); }
+
+/* --- サイドバー (右) --- */
+.fa-link { --svg-icon-url: url('icons/link.svg'); }
+.fa-edit { --svg-icon-url: url('icons/edit.svg'); }
+.fa-cogs { --svg-icon-url: url('icons/cog.svg'); }
+.fa-clipboard-list { --svg-icon-url: url('icons/clipboard-list.svg'); }
+.fa-key { --svg-icon-url: url('icons/common_key.svg'); }
+.fa-chart-pie { --svg-icon-url: url('icons/chart-pie.svg'); }
+.fa-list { --svg-icon-url: url('icons/list.svg'); }

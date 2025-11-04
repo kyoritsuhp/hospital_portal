@@ -1,0 +1,512 @@
+/*
+ * ファイル名称: common.css
+ * 概要: 全ページ共通のスタイルシート
+ */
+
+/* =============================================== */
+/* 1. グローバル & 共通スタイル */
+/* (多くのファイルで共通して使用) */
+/* =============================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #333;
+    min-height: 100vh;
+}
+
+/* .container (全ページのラッパー) */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background: white;
+    min-height: 100vh;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    display: flex;         
+    align-items: center;   
+    gap: 10px;             
+}
+
+/* .header (全ページのヘッダー) */
+.header h1 svg {
+    width: 30px;
+    height: 30px;
+    fill: #f8f9fa;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* .welcome (ログイン時ヘッダー) */
+.welcome {
+    background: rgba(255,255,255,0.2);
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    backdrop-filter: blur(10px);
+}
+
+/* .btn (共通ボタンスタイル) */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    gap: 6px;
+}
+
+.btn-primary {
+    background: #28a745;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #218838;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.btn-outline:hover {
+    background: #667eea;
+    color: white;
+}
+
+/* .main-content (共通レイアウト) */
+.main-content {
+    display: grid;
+    grid-template-columns: 220px 1fr 250px;
+    min-height: calc(100vh - 70px);
+}
+
+/* .sidebar (共通サイドバー) */
+.sidebar {
+    padding: 20px;
+    background: #f8f9fa;
+    border-right: 1px solid #e9ecef;
+}
+
+.sidebar h3 {
+    font-size: 14px;
+    margin-bottom: 15px;
+    color: #495057;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* .sidebar-left (左メニュー) */
+/* (index.php, calendar.php) */
+.sidebar-left {
+    border-right: 1px solid #e9ecef;
+}
+
+.menu-list {
+    list-style: none;
+}
+
+.menu-list li {
+    margin-bottom: 8px;
+}
+
+.menu-list a {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    color: #495057;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    font-size: 18x;
+}
+
+.menu-list a:hover {
+    background: #e9ecef;
+    color: #667eea;
+    transform: translateX(5px);
+}
+
+.menu-list a.active {
+    background: #e9ecef;
+    color: #667eea;
+}
+
+.menu-list a i {
+    margin-right: 10px;
+}
+
+/* .sidebar-right (右サイドバー) */
+/* (index.php, calendar.php) */
+.sidebar-right {
+    border-left: 1px solid #e9ecef;
+}
+
+/* .content (共通メインコンテンツエリア) */
+.content {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* .page-header (共通ページヘッダー) */
+.page-header {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.page-header h2 {
+    color: #495057;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.page-header h2 i {
+    margin-right: 10px;
+    color: #667eea;
+}
+
+/* =============================================== */
+/* 2. フォーム共通スタイル */
+/* (new_post.php, edit_post.php, change_password.php, login.php, calendar.php modal) */
+/* =============================================== */
+
+/* .form-container (new_post.php, edit_post.php) */
+.form-container {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* .form-group (共通フォームグループ) */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #495057;
+    font-size: 13px;
+}
+
+/* .form-control (共通フォーム入力) */
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.25);
+}
+
+.form-control[readonly] {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+select.form-control {
+    cursor: pointer;
+}
+
+.file-input {
+    padding: 8px;
+    border: 2px dashed #ced4da;
+    border-radius: 6px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.file-input:hover {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+/* .importance-options (new_post.php, edit_post.php) */
+.importance-options {
+    display: flex;
+    gap: 15px;
+    margin-top: 8px;
+}
+
+.importance-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.importance-option input[type="radio"] {
+    margin: 0;
+}
+
+.importance-option label {
+    margin: 0;
+    font-weight: normal;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.importance-option.important label {
+    background: rgba(255, 68, 68, 0.1);
+    color: #ff4444;
+}
+
+.importance-option.notice label {
+    background: rgba(255, 204, 0, 0.1);
+    color: #ffcc00;
+}
+
+.importance-option.contact label {
+    background: rgba(68, 68, 255, 0.1);
+    color: #4444ff;
+}
+
+.importance-option input[type="radio"]:checked + label {
+    font-weight: 600;
+    transform: scale(1.05);
+}
+
+/* .form-grid-2 (calendar.php modal) */
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* =============================================== */
+/* 3. モーダル共通スタイル */
+/* (calendar.php) */
+/* =============================================== */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: modalShow 0.3s ease;
+}
+
+@keyframes modalShow {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #495057;
+    font-size: 18px;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+.close-modal:hover {
+    background: #f8f9fa;
+    color: #495057;
+}
+
+.modal-footer {
+    margin-top: 25px;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+
+/* =============================================== */
+/* 9. SVGアイコン共通スタイル */
+/* (login.php, change_password.php 等) */
+/* =============================================== */
+
+/* ボタン内のSVGアイコンの色を文字色と合わせる設定 */
+.btn svg {
+    width: 16px; /* アイコンの幅 */
+    height: 16px; /* アイコンの高さ */
+    fill: currentColor; /* 文字色と同じ色で塗りつぶす */
+}
+
+/* =============================================== */
+/* 10. レスポンシブデザイン */
+/* =============================================== */
+
+@media (max-width: 1200px) {
+    .main-content {
+        grid-template-columns: 200px 1fr 220px;
+    }
+}
+
+@media (max-width: 992px) {
+    .main-content {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+    }
+    
+    .sidebar-left {
+        border-right: none;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .sidebar-right {
+        display: none;
+    }
+    
+    .menu-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .menu-list li {
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    .header-actions {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .content {
+        padding: 15px;
+    }
+    
+    .notice-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .calendar-grid {
+        font-size: 11px;
+    }
+    
+    .calendar-day {
+        min-height: 80px;
+        padding: 5px;
+    }
+}
