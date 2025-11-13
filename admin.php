@@ -2,6 +2,7 @@
 // ファイル名称: admin.php
 // 更新日時: 2025-10-10 (編集権限機能の追加)
 // 修正: 2025-11-04 (権限チェックを $_SESSION['admin'] 基準に変更)
+// 修正: 2025-11-06 (archive.php へのリンクを追加)
 
 require_once 'config.php';
 
@@ -85,16 +86,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// 投稿一覧取得
+// 投稿一覧取得 (表示中のもの + 自分の投稿 を優先的に)
+// ORDER BY で ログインユーザーの投稿 または is_visible=1 のものを優先
 $stmt = $pdo->prepare("
     SELECT n.*, u.username, u.user_id as creator_user_id,
            (SELECT COUNT(*) FROM notice_attachments WHERE notice_id = n.id) as attachment_count
     FROM notices n 
     LEFT JOIN users u ON n.created_by = u.id 
     GROUP BY n.id
-    ORDER BY n.created_at DESC
+    ORDER BY 
+        CASE 
+            WHEN n.created_by = :current_user_id THEN 0
+            WHEN n.is_visible = 1 AND (n.display_end IS NULL OR n.display_end >= CURDATE()) THEN 1
+            ELSE 2
+        END,
+        n.created_at DESC
 ");
-$stmt->execute();
+$stmt->execute(['current_user_id' => $currentUser['id']]);
 $notices = $stmt->fetchAll();
 
 // (currentUserの取得はPOST処理より前に移動済み)
@@ -121,6 +129,10 @@ $notices = $stmt->fetchAll();
                 <a href="new_post.php" class="btn btn-primary">
                     <i class="fas fa-plus"></i> 新規投稿
                 </a>
+                <!-- ★ 過去の投稿へのリンクを追加 -->
+                <a href="archive.php" class="btn btn-outline" style="border-color:#667eea; color:#667eea; background: white;">
+                    <i class="fas fa-archive"></i> 過去の投稿
+                </a>
                 <a href="logout.php" class="btn btn-danger">
                     <i class="fas fa-sign-out-alt"></i> ログアウト
                 </a>
@@ -132,7 +144,7 @@ $notices = $stmt->fetchAll();
                 <h2><i class="fas fa-cogs"></i> 管理画面</h2>
                 <div>
                     <span style="color: #6c757d; font-size: 12px;">
-                        投稿数: <?= count($notices) ?>件
+                        全投稿数: <?= count($notices) ?>件
                     </span>
                 </div>
             </div>
@@ -183,6 +195,12 @@ $notices = $stmt->fetchAll();
                                     if ($notice['is_visible'] && $is_date_active) {
                                         $status_class = 'status-visible';
                                         $status_text = '表示中';
+                                    } elseif ($notice['is_visible'] && !$is_date_active) {
+                                        if (!empty($notice['display_end']) && $notice['display_end'] < $today) {
+                                            $status_text = '期間終了';
+                                        } else if (!empty($notice['display_start']) && $notice['display_start'] > $today) {
+                                            $status_text = '表示待機';
+                                        }
                                     }
                                 ?>
                                 <tr>

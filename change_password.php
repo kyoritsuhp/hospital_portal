@@ -4,6 +4,7 @@
 // アイコンをローカルSVGファイルに置換: 2025-10-15
 // アイコン(fas fa-key)をcommon_key.svgに置換: 2025-10-21
 // アイコン(alert-success)をcommon_circle-ok.svgに置換: 2025-10-21
+// ★ 修正: 2025-11-06 (すべてのアイコンをローカル読み込みに変更)
 
 require_once 'config.php';
 
@@ -100,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>パスワード変更 - 協立病院ポータル</title>
     <link rel="stylesheet" href="change_password.css">
     <link rel="stylesheet" href="common.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- ★ 修正: Font Awesome CDN を削除 -->
 </head>
 <body>
     <div class="container">
@@ -109,14 +110,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php
                     $icon_path = 'icons/common_hospital.svg';
                     if (file_exists($icon_path)) {
-                    echo file_get_contents($icon_path);
+                        echo file_get_contents($icon_path);
                     }
-                ?>協立病院ポータル
+                ?> 協立病院ポータル
             </h1>
 
             <div class="header-actions">
                 <span class="welcome">ようこそ、<?= htmlspecialchars($current_user['username']) ?>さん</span>
-                <a href="index.php" class="btn btn-secondary"><i class="fas fa-home"></i> ホームへ戻る</a>
+                <a href="index.php" class="btn btn-secondary">
+                    <?php 
+                        $icon_path = 'icons/home.svg';
+                        if (file_exists($icon_path)) {
+                            echo file_get_contents($icon_path);
+                        }
+                    ?> ホームへ戻る
+                </a>
             </div>
         </header>
 
@@ -157,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
     <?php if ($success): ?>
         <div class="alert alert-success">
-            <?php // <i class="fas fa-check-circle"></i> を icons/common_circle-ok.svg に変更
+            <?php
             $icon_path = 'icons/common_circle-ok.svg';
             if (file_exists($icon_path)) {
             echo file_get_contents($icon_path);
@@ -169,29 +177,103 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <form method="POST" action="change_password.php">
                     <div class="form-group">
-                        <label for="current_password"><i class="fas fa-lock"></i> 現在のパスワード</label>
+                        <label for="current_password">
+                            <?php 
+                                $icon_path = 'icons/common_passward.svg';
+                                if (file_exists($icon_path)) {
+                                    echo file_get_contents($icon_path);
+                                }
+                            ?> 現在のパスワード
+                        </label>
                         <div class="password-input-wrapper">
                             <input type="password" id="current_password" name="current_password" class="form-control" required autocomplete="current-password">
-                            <button type="button" class="toggle-password" onclick="togglePassword('current_password')"><i class="fas fa-eye"></i></button>
+                            <button type="button" class="toggle-password" onclick="togglePassword('current_password')">
+                                <?php /* ★ 変更: eye.svg を読み込み */
+                                    $icon_path = 'icons/eye.svg';
+                                    if (file_exists($icon_path)) {
+                                        echo file_get_contents($icon_path);
+                                    }
+                                ?>
+                                <?php /* ★ 変更: eye-slash.svg を読み込み */
+                                    $icon_path = 'icons/eye-slash.svg';
+                                    if (file_exists($icon_path)) {
+                                        echo file_get_contents($icon_path);
+                                    }
+                                ?>
+                            </button>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="new_password"><i class="fas fa-key"></i> 新しいパスワード</label>
+                        <label for="new_password">
+                            <?php 
+                                $icon_path = 'icons/common_key.svg';
+                                if (file_exists($icon_path)) {
+                                    echo file_get_contents($icon_path);
+                                }
+                            ?> 新しいパスワード
+                        </label>
                         <div class="password-input-wrapper">
                             <input type="password" id="new_password" name="new_password" class="form-control" required autocomplete="new-password">
-                            <button type="button" class="toggle-password" onclick="togglePassword('new_password')"><i class="fas fa-eye"></i></button>
+                            <button type="button" class="toggle-password" onclick="togglePassword('new_password')">
+                                <?php 
+                                    $icon_path = 'icons/eye.svg';
+                                    if (file_exists($icon_path)) {
+                                        echo file_get_contents($icon_path);
+                                    }
+                                ?>
+                                <?php 
+                                    $icon_path = 'icons/eye-slash.svg';
+                                    if (file_exists($icon_path)) {
+                                        echo file_get_contents($icon_path);
+                                    }
+                                ?>
+                            </button>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="confirm_password"><i class="fas fa-key"></i> 新しいパスワード（確認用）</label>
+                        <label for="confirm_password">
+                            <?php 
+                                $icon_path = 'icons/common_key.svg';
+                                if (file_exists($icon_path)) {
+                                    echo file_get_contents($icon_path);
+                                }
+                            ?> 新しいパスワード（確認用）
+                        </label>
                         <div class="password-input-wrapper">
                             <input type="password" id="confirm_password" name="confirm_password" class="form-control" required autocomplete="new-password">
-                            <button type="button" class="toggle-password" onclick="togglePassword('confirm_password')"><i class="fas fa-eye"></i></button>
+                            <button type="button" class="toggle-password" onclick="togglePassword('confirm_password')">
+                                <?php 
+                                    $icon_path = 'icons/eye.svg';
+                                    if (file_exists($icon_path)) {
+                                        echo file_get_contents($icon_path);
+                                    }
+                                ?>
+                                <?php 
+                                    $icon_path = 'icons/eye-slash.svg';
+                                    if (file_exists($icon_path)) {
+                                        echo file_get_contents($icon_path);
+                                    }
+                                ?>
+                            </button>
                         </div>
                     </div>
                     <div class="button-group">
-                        <a href="index.php" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> 戻る</a>
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> パスワードを変更</button>
+                        <a href="index.php" class="btn btn-secondary">
+                            <?php 
+                                $icon_path = 'icons/common_arrow-left.svg';
+                                if (file_exists($icon_path)) {
+                                    echo file_get_contents($icon_path);
+                                }
+                            ?> 戻る
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <?php /* ★ 変更: save.svg を読み込み */
+                                $icon_path = 'icons/save.svg';
+                                if (file_exists($icon_path)) {
+                                    echo file_get_contents($icon_path);
+                                }
+                            ?> パスワードを変更
+                        </button>
                     </div>
                 </form>
             </div>
@@ -200,17 +282,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
         function togglePassword(inputId) {
             const input = document.getElementById(inputId);
-            const icon = input.parentElement.querySelector('.toggle-password i');
+            const button = input.parentElement.querySelector('.toggle-password');
+            const iconEye = button.querySelector('.icon-eye'); // eye.svg に .icon-eye クラスを想定
+            const iconEyeSlash = button.querySelector('.icon-eye-slash'); // eye-slash.svg に .icon-eye-slash クラスを想定
+
             if (input.type === 'password') {
                 input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
+                if (iconEye) iconEye.style.display = 'none';
+                if (iconEyeSlash) iconEyeSlash.style.display = 'inline-block';
             } else {
                 input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
+                if (iconEye) iconEye.style.display = 'inline-block';
+                if (iconEyeSlash) iconEyeSlash.style.display = 'none';
             }
         }
+        
+        // 初期表示時に .icon-eye-slash を非表示にする
+        document.addEventListener('DOMContentLoaded', function() {
+            const eyeSlashes = document.querySelectorAll('.icon-eye-slash');
+            eyeSlashes.forEach(icon => {
+                icon.style.display = 'none';
+            });
+            // eye.svg には .icon-eye クラス、 eye-slash.svg には .icon-eye-slash クラスが
+            // file_get_contents で読み込むSVGファイル自体に付与されている必要があります。
+        });
     </script>
 </body>
 </html>

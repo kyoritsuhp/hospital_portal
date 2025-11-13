@@ -2,6 +2,7 @@
 // ファイル名称: edit_post.php
 // 更新日時: 2025-10-10 (編集権限機能の追加)
 // 修正: 2025-11-04 (権限チェックを $_SESSION['admin'] 基準に変更)
+// 修正: 2025-11-06 (主題②：更新後リダイレクト / 主題③：ファイル処理ロジック統一)
 
 require_once 'config.php';
 
@@ -94,10 +95,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             
-            // 新規ファイルアップロード処理
+            // --- [主題③] ファイルアップロード処理 (new_post.php とロジックを統一) ---
+            $upload_success = true;
+            $upload_errors = [];
+            
             if (!empty($_FILES['attachments']['name'][0])) {
                 for ($i = 0; $i < count($_FILES['attachments']['name']); $i++) {
                     if ($_FILES['attachments']['error'][$i] === UPLOAD_ERR_OK) {
+                        
+                        // ★ ファイルサイズチェック（10MB制限）
+                        if ($_FILES['attachments']['size'][$i] > 10 * 1024 * 1024) {
+                            $upload_errors[] = $_FILES['attachments']['name'][$i] . ' (ファイルサイズが大きすぎます)';
+                            continue;
+                        }
+
                         $file = [
                             'name' => $_FILES['attachments']['name'][$i],
                             'tmp_name' => $_FILES['attachments']['tmp_name'][$i],
@@ -105,13 +116,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'type' => $_FILES['attachments']['type'][$i],
                             'error' => $_FILES['attachments']['error'][$i]
                         ];
-                        handleFileUpload($file, $notice_id);
+                        
+                        // ★ エラーハンドリングを追加
+                        if (!handleFileUpload($file, $notice_id)) {
+                            $upload_errors[] = $_FILES['attachments']['name'][$i];
+                            $upload_success = false;
+                        }
                     }
                 }
             }
+            // --- [主題③] ここまで ---
 
             $pdo->commit();
-            $message = '投稿を更新しました。';
+            
+            // --- [主題②] 更新後の動作 ---
+            if ($upload_success && empty($upload_errors)) {
+                // ★ すべて成功
+                $_SESSION['success_message'] = '投稿を更新しました。';
+                header('Location: index.php');
+                exit;
+            } else {
+                // ★ 一部ファイルでエラー
+                if (!empty($upload_errors)) {
+                    $message = '投稿は更新されましたが、以下のファイルのアップロードに失敗しました: ' . implode(', ', $upload_errors);
+                } else {
+                    $message = '投稿は更新されましたが、一部のファイルのアップロードに失敗しました。';
+                }
+            }
+            // --- [主題②] ここまで ---
             
             // 更新後のデータを再取得してフォームに表示
             $stmt = $pdo->prepare("SELECT * FROM notices WHERE id = ?");
@@ -138,6 +170,8 @@ $attachments = $stmt->fetchAll();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>投稿編集 - 院内ポータルサイト</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="common.css"> <!-- common.css を読み込む -->
+    <link rel="stylesheet" href="new_post.css"> <!-- new_post.css のスタイルを流用 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -157,13 +191,13 @@ $attachments = $stmt->fetchAll();
                 </div>
 
                 <?php if ($message): ?>
-                    <div class="alert alert-success" style="padding: 12px; border-radius: 6px; background: #d4edda; color: #155724;">
+                    <div class="alert alert-success" style="padding: 12px; border-radius: 6px; background: #d4edda; color: #155724; margin-bottom: 15px;">
                         <i class="fas fa-check-circle"></i> <?= htmlspecialchars($message) ?>
                         <a href="admin.php" style="margin-left: 15px;">管理画面で確認</a>
                     </div>
                 <?php endif; ?>
                 <?php if ($error): ?>
-                    <div class="alert alert-error" style="padding: 12px; border-radius: 6px; background: #f8d7da; color: #721c24;">
+                    <div class="alert alert-error" style="padding: 12px; border-radius: 6px; background: #f8d7da; color: #721c24; margin-bottom: 15px;">
                         <i class="fas fa-exclamation-triangle"></i> <?= htmlspecialchars($error) ?>
                     </div>
                 <?php endif; ?>
@@ -213,11 +247,11 @@ $attachments = $stmt->fetchAll();
                             <label><i class="fas fa-paperclip"></i> 添付ファイル</label>
                             <?php if (!empty($attachments)): ?>
                                 <div style="margin-bottom: 10px; background: #f8f9fa; padding: 10px; border-radius: 6px;">
-                                    <strong>現在のファイル:</strong>
+                                    <strong>チェックを入れ"更新する"を押すとファイルは削除されます。</strong>
                                     <?php foreach ($attachments as $attachment): ?>
-                                    <div style="margin: 5px 0;">
-                                        <input type="checkbox" name="delete_attachments[]" value="<?= $attachment['id'] ?>" id="delete_<?= $attachment['id'] ?>">
-                                        <label for="delete_<?= $attachment['id'] ?>"> 削除: <?= htmlspecialchars($attachment['file_name']) ?></label>
+                                    <div style="margin: 5px 0; display: flex; align-items: center; gap: 5px;">
+                                        <input type="checkbox" name="delete_attachments[]" value="<?= $attachment['id'] ?>" id="delete_<?= $attachment['id'] ?>" style="margin: 0; flex-shrink: 0;">
+                                        <label for="delete_<?= $attachment['id'] ?>" style="margin: 0; font-weight: normal; cursor: pointer;"> 削除: <?= htmlspecialchars($attachment['file_name']) ?></label>
                                     </div>
                                     <?php endforeach; ?>
                                 </div>

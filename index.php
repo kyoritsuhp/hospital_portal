@@ -6,6 +6,9 @@
 // ★ 健診担当者リンク (admin=1 または kenshin=1 で表示) を修正: 2025-10-24
 // (フィルター機能のJavaScriptを実装: 2025-10-31)
 // 修正: 2025-11-04 (投稿成功メッセージの表示機能を追加)
+// 修正: 2025-11-06 (archive.php へのリンクを追加)
+// ★ レイアウト改修: 2025-11-06 (重要度・タイトルのグループ化、日時・投稿者の右寄せ)
+// ★ 添付ファイル表示改修: 2025-11-06 (H4見出しを削除し、アイコンとファイル名を横並び)
 
 require_once 'config.php';
 
@@ -117,11 +120,20 @@ $notices = $stmt->fetchAll();
                                  data-importance="<?= htmlspecialchars($notice['importance']) ?>"
                                  style="border-left: 4px solid <?= getImportanceColor($notice['importance']) ?>">
 
+                                <!-- レイアウト改修 (index.css と連動) -->
                                 <div class="notice-header">
-                                    <div class="notice-meta">
+                                    <!-- 左側グループ: 重要度 + タイトル -->
+                                    <div class="notice-title-group">
                                         <span class="importance-badge" style="background-color: <?= getImportanceColor($notice['importance']) ?>">
                                             <?= getImportanceLabel($notice['importance']) ?>
                                         </span>
+                                        <h3 class="notice-title" title="<?= htmlspecialchars($notice['title']) ?>">
+                                            <?= htmlspecialchars($notice['title']) ?>
+                                        </h3>
+                                    </div>
+                                    
+                                    <!-- 右側グループ: 日時 + 投稿者 -->
+                                    <div class="notice-meta-right">
                                         <span class="notice-date">
                                             <i class="fas fa-clock"></i> <?= date('Y/m/d H:i', strtotime($notice['created_at'])) ?>
                                         </span>
@@ -130,16 +142,17 @@ $notices = $stmt->fetchAll();
                                         </span>
                                     </div>
                                 </div>
+                                <!-- ここまでレイアウト改修 -->
 
-                                <h3 class="notice-title"><?= htmlspecialchars($notice['title']) ?></h3>
                                 <div class="notice-content">
                                     <?= nl2br(htmlspecialchars($notice['content'])) ?>
                                 </div>
 
                                 <?php if ($notice['attachments']): ?>
                                     <div class="notice-attachments">
-                                        <h4><i class="fas fa-paperclip"></i> 添付ファイル</h4>
+                                        <!-- ★ <h4> タグを削除 -->
                                         <div class="attachment-list">
+                                            <!-- ★ 先頭のクリップアイコンを削除 (ループ内に移動するため) -->
                                             <?php
                                             $attachments = explode('|', $notice['attachments']);
                                             foreach ($attachments as $attachment):
@@ -148,11 +161,8 @@ $notices = $stmt->fetchAll();
                                             ?>
                                                 <a href="<?= htmlspecialchars($file_path) ?>" target="_blank" class="attachment-link">
                                                     <?php
-                                                    $icon = 'fas fa-file';
-                                                    if (strpos($file_type, 'image') !== false) $icon = 'fas fa-file-image';
-                                                    elseif (strpos($file_type, 'pdf') !== false) $icon = 'fas fa-file-pdf';
-                                                    elseif (strpos($file_type, 'word') !== false) $icon = 'fas fa-file-word';
-                                                    elseif (strpos($file_type, 'excel') !== false) $icon = 'fas fa-file-excel';
+                                                    // ★ 常にクリップアイコンを表示するように変更
+                                                    $icon = 'fas fa-paperclip';
                                                     ?>
                                                     <i class="<?= $icon ?>"></i>
                                                     <?= htmlspecialchars($file_name) ?>
@@ -183,6 +193,13 @@ $notices = $stmt->fetchAll();
                         <i class="fas fa-bullhorn"></i>
                         <span>周知掲示板</span>
                     </a>
+                    
+                    <!-- ★ ログイン状態に関わらず表示するよう変更 -->
+                    <a href="archive.php" class="quick-link">
+                        <i class="fas fa-archive"></i>
+                        <span>過去の投稿</span>
+                    </a>
+
                     <?php if (isLoggedIn()): ?>
                         <a href="new_post.php" class="quick-link">
                             <i class="fas fa-edit"></i>

@@ -1,6 +1,8 @@
 /*
  * ファイル名称: index.css
  * 概要: index.php 固有のスタイル
+ * ★ レイアウト改修: 2025-11-06 (投稿ヘッダーのスタイル変更)
+ * ★ 添付ファイル表示改修: 2025-11-06 (H4見出しを削除し、アイコンとファイル名を横並び)
  */
 
 /* =============================================== */
@@ -141,15 +143,32 @@
     display: none;
 }
 
+/* 変更: flexboxレイアウト */
 .notice-header {
-    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* 上揃え */
+    gap: 15px;
+    margin-bottom: 8px; /* タイトル下のマージンを削除したため調整 */
 }
 
-.notice-meta {
+/* 追加: 左側グループ (重要度 + タイトル) */
+.notice-title-group {
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+    gap: 10px;
+    flex: 1; /* 伸縮可能にする */
+    min-width: 0; /* タイトルが長い場合に縮むように */
+}
+
+/* 追加: 右側グループ (日時 + 投稿者) */
+.notice-meta-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0; /* 縮まないように */
+    text-align: right;
 }
 
 /* .importance-badge (index.php, admin.php) */
@@ -160,12 +179,14 @@
     font-size: 11px;
     font-weight: bold;
     text-transform: uppercase;
+    flex-shrink: 0; /* ★ 追加: 縮まないように */
 }
 
 .notice-date,
 .notice-author {
     font-size: 11px;
     color: #6c757d;
+    white-space: nowrap; /* ★ 追加: 折り返さない */
 }
 
 .notice-date i,
@@ -177,13 +198,21 @@
     font-size: 15px;
     font-weight: 600;
     color: #212529;
-    margin-bottom: 8px;
+    margin-bottom: 0; /* 変更: マージン削除 */
+    /* 追加: タイトルが長い場合の省略処理 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .notice-content {
     color: #495057;
     line-height: 1.5;
     margin-bottom: 10px;
+    /* 追加: notice-headerの下に配置されるため、マージン等で見やすく調整 */
+    padding-top: 5px;
+    border-top: 1px solid #f0f0f0; /* 区切り線を追加 */
+    margin-top: 8px; /* 区切り線とのスペース */
 }
 
 .notice-attachments {
@@ -192,17 +221,29 @@
     margin-top: 10px;
 }
 
+/* ★ 変更: <h4> スタイルを削除 (またはコメントアウト) */
+/*
 .notice-attachments h4 {
     font-size: 12px;
     color: #6c757d;
     margin-bottom: 8px;
 }
+*/
 
 .attachment-list {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    align-items: center; /* ★ 変更: アイコンとリンクを縦中央揃え */
 }
+
+/* ★ 削除: 先頭のクリップアイコンのスタイル */
+/*
+.attachment-icon {
+    font-size: 14px;
+    color: #6c757d;
+}
+*/
 
 .attachment-link {
     display: inline-flex;
@@ -324,3 +365,4 @@
 .fa-key { --svg-icon-url: url('icons/common_key.svg'); }
 .fa-chart-pie { --svg-icon-url: url('icons/chart-pie.svg'); }
 .fa-list { --svg-icon-url: url('icons/list.svg'); }
+.fa-archive { --svg-icon-url: url('icons/archive.svg'); }

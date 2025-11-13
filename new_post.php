@@ -2,6 +2,7 @@
 // ファイル名称: new_post.php
 // 更新日時: 2025-10-06
 // 修正: 2025-11-04 (投稿成功時にindex.phpへリダイレクトしメッセージ表示)
+// 確認: 2025-11-06 (主題③：ファイルアップロードロジックは正常であることを確認)
 
 require_once 'config.php';
 
@@ -52,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             $notice_id = $pdo->lastInsertId();
             
-            // ファイルアップロード処理
+            // ファイルアップロード処理 (このロジックは既に複数ファイルに対応しています)
             $upload_success = true;
             $upload_errors = [];
             
@@ -62,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         // ファイルサイズチェック（10MB制限）
                         if ($_FILES['attachments']['size'][$i] > 10 * 1024 * 1024) {
                             $upload_errors[] = $_FILES['attachments']['name'][$i] . ' (ファイルサイズが大きすぎます)';
-                            continue;
+                            continue; // このファイルはスキップ
                         }
                         
                         $file = [
@@ -77,6 +78,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $upload_errors[] = $_FILES['attachments']['name'][$i];
                             $upload_success = false;
                         }
+                    } elseif ($_FILES['attachments']['error'][$i] !== UPLOAD_ERR_NO_FILE) {
+                        // NO_FILE 以外は何らかのエラー
+                        $upload_errors[] = $_FILES['attachments']['name'][$i] . ' (アップロードエラー)';
+                        $upload_success = false;
                     }
                 }
             }
@@ -93,8 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
 
             } else {
-                // 一部ファイルでエラー
-                $pdo->commit(); // 投稿自体は保存
+                // 一部ファイルでエラーがあっても、投稿自体は保存
+                $pdo->commit(); 
                 if (!empty($upload_errors)) {
                     $message = '投稿は作成されましたが、以下のファイルのアップロードに失敗しました: ' . implode(', ', $upload_errors);
                 } else {
@@ -291,7 +296,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             >
                             <small style="color: #6c757d; font-size: 11px; display: block; margin-top: 5px;">
                                 対応形式: 画像(JPG,PNG,GIF)、PDF、Office文書、テキストファイル<br>
-                                複数ファイルの選択が可能です
+                                <strong>Ctrl(Cmd)キーやShiftキーで複数ファイルの選択が可能です</strong>
                             </small>
                             <div id="file-preview" style="margin-top: 10px;"></div>
                         </div>
